@@ -7,11 +7,13 @@
   <sounds name="sound"/>
   <sprites name="sprites">
     <sprite>sprites\player_cell_sprite</sprite>
+    <sprite>sprites\food</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
   <objects name="objects">
     <object>objects\player_cell_object</object>
+    <object>objects\food_object</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\game_room</room>

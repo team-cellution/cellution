@@ -27,6 +27,11 @@
             <kind>1</kind>
             <string>// Initialize Variables
 clicked = false;
+moveOrder = false;
+mOrderX = 0;
+mOrderY = 0;
+speed = 0;
+foodScore = 0;
 </string>
           </argument>
         </arguments>
@@ -49,16 +54,60 @@ clicked = false;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>// select
+            <string>// select cell
 if (mouse_check_button_pressed(mb_left)) {
     if (instance_position(mouse_x, mouse_y, all)) {
         clicked = true;
-        show_message( object_get_name(object_index) );
     }
     else {
         clicked = false;
     }
 }
+
+// order to move
+if (clicked == true) {
+    if (mouse_check_button_pressed(mb_right)) {
+        moveOrder = true;
+        mOrderX = mouse_x;
+        mOrderY = mouse_y;
+        speed = 2;
+    }
+}
+
+// move or stop move order
+if (moveOrder == true) {
+    if (instance_position(mOrderX, mOrderY, all)) {
+        moveOrder = false;
+        speed = 0;
+    }
+    else {
+        move_towards_point(mOrderX, mOrderY, speed);
+    }
+}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="food_object">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>foodScore += 1;
 </string>
           </argument>
         </arguments>

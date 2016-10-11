@@ -7,7 +7,7 @@
   <sounds name="sound"/>
   <sprites name="sprites">
     <sprite>sprites\player_cell_sprite</sprite>
-    <sprite>sprites\food</sprite>
+    <sprite>sprites\food_sprite</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>

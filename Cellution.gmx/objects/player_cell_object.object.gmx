@@ -76,7 +76,7 @@ if (clicked == true) {
 
 // move or stop move order
 if (moveOrder == true) {
-    if (instance_position(mOrderX, mOrderY, all)) {
+    if (mOrderX == x and mOrderY == y) {
         moveOrder = false;
         speed = 0;
     }

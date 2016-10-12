@@ -9,6 +9,10 @@ namespace cellution
     public class Cell : Sprite
     {
         public Vector2 targetPosition;
+        public int a;
+        public int c;
+        public int g;
+        public int t;
 
         public Cell(Texture2D loadedTex) : base(loadedTex)
         {

@@ -1,8 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace cellution
 {
@@ -19,51 +18,33 @@ namespace cellution
         SpriteBatch spriteBatch;
         public TextureManager textureManager;
 
-        internal Dictionary<string, Camera> cameras;
-        private string currentCamera;
-        public string CurrentCamera
-        {
-            get
-            {
-                return currentCamera;
-            }
-            set
-            {
-                if (cameras.ContainsKey(value))
-                {
-                    currentCamera = value;
-                }
-                else
-                {
-                    throw new Exception("That camera doesn't exist");
-                }
-            }
-        }
-
-        public Camera Camera1 { get; private set; }
+        public PermanantStates<Room> rooms;
 
         public World(GraphicsDeviceManager graphics)
         {
             this.graphics = graphics;
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
-            cameras = new Dictionary<string, Camera>();
-            Camera1 = new Camera(graphics.GraphicsDevice.Viewport, Camera.CameraFocus.TopLeft);
-            cameras.Add("camera1", Camera1);
-            CurrentCamera = "camera1";
+            rooms = new PermanantStates<Room>();
+            rooms.AddState("game", new Room(graphics));
+        }
+
+        public void Update()
+        {
+            rooms.CurrentState.Update();
         }
 
         public void BeginDraw()
         {
             BeginDraw(SpriteSortMode.Deferred, BlendState.AlphaBlend,
                 null, null, null, null,
-                cameras[currentCamera].Transform);
+                rooms.CurrentState.cameras.CurrentState.Transform);
         }
 
         public void BeginDraw(SpriteSortMode spriteSortMode, BlendState blendState)
         {
             BeginDraw(spriteSortMode, blendState,
                 null, null, null, null,
-                cameras[currentCamera].Transform);
+                rooms.CurrentState.cameras.CurrentState.Transform);
         }
 
         public void BeginDraw(SpriteSortMode sortMode, BlendState blendState,
@@ -72,6 +53,11 @@ namespace cellution
         {
             spriteBatch.Begin(sortMode, blendState, samplerState,
                 depthStencilState, rasterizerState, effect, transformMatrix);
+        }
+
+        public void Draw()
+        {
+            rooms.CurrentState.Draw(spriteBatch);
         }
 
         public void Draw(Action<SpriteBatch> drawMethod)

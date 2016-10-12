@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -16,6 +17,9 @@ namespace cellution
         public KeyboardState previousKeyboardState;
         public MouseState previousMouseState;
 
+        Room gameRoom;
+        Room upgradeRoom;
+
         Cell cell;
 
         public Game1()
@@ -28,7 +32,7 @@ namespace cellution
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 480;
             graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
-#else
+#elif WINDOWS
             this.IsMouseVisible = true;
 #endif
         }
@@ -43,6 +47,7 @@ namespace cellution
         {
             world = new World(graphics);
             world.textureManager = new TextureManager(Content);
+            world.rooms.AddState("update", new Room(graphics));
 
             resourceManager = new ResourceManager();
 
@@ -61,6 +66,11 @@ namespace cellution
             world.textureManager.Load("g");
             world.textureManager.Load("t");
             cell = new Cell(world.textureManager["Cell"]);
+
+            world.rooms.CurrentState.AddUpdate(cell.Update);
+            world.rooms.CurrentState.AddUpdate(resourceManager.Update);
+            world.rooms.CurrentState.AddDraw(resourceManager.Draw);
+            world.rooms.CurrentState.AddDraw(cell.Draw);
         }
 
         /// <summary>
@@ -85,15 +95,46 @@ namespace cellution
             if (mouseState.LeftButton == ButtonState.Pressed &&
                 previousMouseState.LeftButton == ButtonState.Released)
             {
-                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.cameras[world.CurrentCamera].Transform);
+                
+                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.Transform);
                 cell.targetPosition = new Vector2(transformedMouseState.X, transformedMouseState.Y);
                 cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
                 cell.velocity.Normalize();
                 cell.velocity *= 5.0f;
             }
 
-            cell.Update();
-            resourceManager.Update();
+            world.Update();
+
+            List<Resource> resourcesToRemove = new List<Resource>();
+            foreach (Resource resource in resourceManager.resources)
+            {
+                if (cell.rectange.Contains(resource.sprite.rectange))
+                {
+                    if (resource.resourceType == Resource.ResourceTypes.A)
+                    {
+                        cell.a++;
+                    }
+                    else if (resource.resourceType == Resource.ResourceTypes.C)
+                    {
+                        cell.c++;
+                    }
+                    else if (resource.resourceType == Resource.ResourceTypes.G)
+                    {
+                        cell.g++;
+                    }
+                    else if (resource.resourceType == Resource.ResourceTypes.T)
+                    {
+                        cell.t++;
+                    }
+                    resourcesToRemove.Add(resource);
+                    resourceManager.currentResources--;
+                }
+            }
+            foreach (Resource resource in resourcesToRemove)
+            {
+                resourceManager.resources.Remove(resource);
+            }
+            resourcesToRemove.Clear();
 
             previousKeyboardState = keyboardState;
             previousMouseState = mouseState;
@@ -110,8 +151,7 @@ namespace cellution
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             world.BeginDraw();
-            world.Draw(resourceManager.Draw);
-            world.Draw(cell.Draw);
+            world.Draw();
             world.EndDraw();
 
             base.Draw(gameTime);

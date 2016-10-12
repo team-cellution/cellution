@@ -10,8 +10,13 @@ namespace cellution
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        Texture2D texture;
+        public static World world;
+        ResourceManager resourceManager;
+
+        public KeyboardState previousKeyboardState;
+        public MouseState previousMouseState;
+
+        Cell cell;
 
         public Game1()
         {
@@ -23,6 +28,8 @@ namespace cellution
             graphics.PreferredBackBufferWidth = 800;
             graphics.PreferredBackBufferHeight = 480;
             graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
+#else
+            this.IsMouseVisible = true;
 #endif
         }
 
@@ -34,7 +41,10 @@ namespace cellution
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            world = new World(graphics);
+            world.textureManager = new TextureManager(Content);
+
+            resourceManager = new ResourceManager();
 
             base.Initialize();
         }
@@ -45,10 +55,12 @@ namespace cellution
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            texture = Content.Load<Texture2D>("Cell");
+            world.textureManager.Load("Cell");
+            world.textureManager.Load("a");
+            world.textureManager.Load("c");
+            world.textureManager.Load("g");
+            world.textureManager.Load("t");
+            cell = new Cell(world.textureManager["Cell"]);
         }
 
         /// <summary>
@@ -67,10 +79,24 @@ namespace cellution
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            KeyboardState keyboardState = Keyboard.GetState();
+            MouseState mouseState = Mouse.GetState();
 
-            // TODO: Add your update logic here
+            if (mouseState.LeftButton == ButtonState.Pressed &&
+                previousMouseState.LeftButton == ButtonState.Released)
+            {
+                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.cameras[world.CurrentCamera].Transform);
+                cell.targetPosition = new Vector2(transformedMouseState.X, transformedMouseState.Y);
+                cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
+                cell.velocity.Normalize();
+                cell.velocity *= 5.0f;
+            }
+
+            cell.Update();
+            resourceManager.Update();
+
+            previousKeyboardState = keyboardState;
+            previousMouseState = mouseState;
 
             base.Update(gameTime);
         }
@@ -83,9 +109,10 @@ namespace cellution
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
-            spriteBatch.Draw(texture, Vector2.Zero, Color.White);
-            spriteBatch.End();
+            world.BeginDraw();
+            world.Draw(resourceManager.Draw);
+            world.Draw(cell.Draw);
+            world.EndDraw();
 
             base.Draw(gameTime);
         }

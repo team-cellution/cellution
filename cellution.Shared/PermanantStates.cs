@@ -7,19 +7,19 @@ namespace cellution
     public class PermanantStates<T>
     {
         private Dictionary<string, T> states;
-        private string name;
-        public string Name
+        private string currentName;
+        public string CurrentName
         {
             get
             {
-                return name;
+                return currentName;
             }
             set
             {
                 if (states.ContainsKey(value))
                 {
-                    name = value;
-                    CurrentState = states[Name];
+                    currentName = value;
+                    CurrentState = states[CurrentName];
                 }
             }
         }
@@ -28,7 +28,7 @@ namespace cellution
         public PermanantStates()
         {
             states = new Dictionary<string, T>();
-            name = null;
+            currentName = null;
             CurrentState = default(T);
         }
 
@@ -39,9 +39,9 @@ namespace cellution
                 states.Add(name, state);
             }
 
-            if (Name == null)
+            if (CurrentName == null)
             {
-                Name = name;
+                CurrentName = name;
             }
         }
 
@@ -61,9 +61,9 @@ namespace cellution
         {
             if (states.ContainsKey(name))
             {
-                if (Name == name)
+                if (CurrentName == name)
                 {
-                    Name = null;
+                    CurrentName = null;
                     CurrentState = default(T);
                 }
                 states.Remove(name);

@@ -17,8 +17,7 @@ namespace cellution
         public KeyboardState previousKeyboardState;
         public MouseState previousMouseState;
 
-        Room gameRoom;
-        Room upgradeRoom;
+        const string UpgradeRoom = "upgrade";
 
         Cell cell;
 
@@ -47,7 +46,7 @@ namespace cellution
         {
             world = new World(graphics);
             world.textureManager = new TextureManager(Content);
-            world.rooms.AddState("update", new Room(graphics));
+            world.rooms.AddState(UpgradeRoom, new Room(graphics));
 
             resourceManager = new ResourceManager();
 
@@ -96,11 +95,24 @@ namespace cellution
                 previousMouseState.LeftButton == ButtonState.Released)
             {
                 
-                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.Transform);
+                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
                 cell.targetPosition = new Vector2(transformedMouseState.X, transformedMouseState.Y);
                 cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
                 cell.velocity.Normalize();
                 cell.velocity *= 5.0f;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Space) &&
+                previousKeyboardState.IsKeyUp(Keys.Space))
+            {
+                if (world.rooms.CurrentName == "game")
+                {
+                    world.rooms.CurrentName = UpgradeRoom;
+                }
+                else if (world.rooms.CurrentName == UpgradeRoom)
+                {
+                    world.rooms.CurrentName = "game";
+                }
             }
 
             world.Update();

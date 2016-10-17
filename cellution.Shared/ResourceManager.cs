@@ -11,9 +11,11 @@ namespace cellution
         public List<Resource> resources;
         private const int totalResources = 10;
         public int currentResources = 0;
+        private Viewport viewport;
 
-        public ResourceManager()
+        public ResourceManager(Viewport viewport)
         {
+            this.viewport = viewport;
             resources = new List<Resource>();
         }
 
@@ -22,7 +24,7 @@ namespace cellution
             while (currentResources < totalResources)
             {
                 Resource resource = new Resource();
-                resource.sprite.position = new Vector2(World.Random.Next(800), World.Random.Next(480));
+                resource.sprite.position = new Vector2(World.Random.Next(viewport.Width), World.Random.Next(viewport.Height));
                 resources.Add(resource);
                 currentResources++;
             }

@@ -75,7 +75,7 @@ namespace cellution
             {
                 transform = Matrix.CreateTranslation(new Vector3(-Pan.X, -Pan.Y, 0)) *
                     Matrix.CreateRotationZ(MathHelper.ToRadians(Rotation)) *
-                    Matrix.CreateScale(new Vector3(Zoom, Zoom, 0));
+                    Matrix.CreateScale(new Vector3(Zoom, Zoom, 1));
                 viewport.X = (int)Math.Round(Pan.X);
                 viewport.Y = (int)Math.Round(Pan.Y);
             }

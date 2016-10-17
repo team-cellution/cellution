@@ -23,7 +23,7 @@ namespace cellution
 
         SpriteFont scoreFont;
         StatsGUI statsGUI;
-        Sprite background;
+        Background background;
 
         public Game1()
         {
@@ -36,7 +36,9 @@ namespace cellution
             graphics.PreferredBackBufferHeight = 480;
             graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
 #elif WINDOWS
-            this.IsMouseVisible = true;
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1080;
+            IsMouseVisible = true;
 #endif
         }
 
@@ -52,7 +54,7 @@ namespace cellution
             world.textureManager = new TextureManager(Content);
             world.rooms.AddState(UpgradeRoom, new Room(graphics));
 
-            resourceManager = new ResourceManager();
+            resourceManager = new ResourceManager(graphics.GraphicsDevice.Viewport);
 
             base.Initialize();
         }
@@ -72,7 +74,7 @@ namespace cellution
             world.textureManager.Load("helix-resource");
             scoreFont = Content.Load<SpriteFont>("ScoreFont");
 
-            background = new Sprite(world.textureManager["BG-Layer"]);
+            background = new Background(world.textureManager["BG-Layer"], graphics.GraphicsDevice.Viewport);
             cell = new Cell(world.textureManager["Cell"]);
             statsGUI = new StatsGUI(world.textureManager["helix-resource"], scoreFont, cell);
 
@@ -104,11 +106,15 @@ namespace cellution
             KeyboardState keyboardState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
 
+            if (keyboardState.IsKeyDown(Keys.Escape))
+            {
+                Exit();
+            }
+
             if (mouseState.LeftButton == ButtonState.Pressed &&
                 previousMouseState.LeftButton == ButtonState.Released)
             {
-                
-                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.Transform);
+                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
                 cell.targetPosition = new Vector2(transformedMouseState.X, transformedMouseState.Y);
                 cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
                 cell.velocity.Normalize();

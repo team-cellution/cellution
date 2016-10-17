@@ -21,6 +21,10 @@ namespace cellution
 
         Cell cell;
 
+        SpriteFont scoreFont;
+        StatsGUI statsGUI;
+        Sprite background;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -64,12 +68,21 @@ namespace cellution
             world.textureManager.Load("c");
             world.textureManager.Load("g");
             world.textureManager.Load("t");
+            world.textureManager.Load("BG-Layer");
+            world.textureManager.Load("helix-resource");
+            scoreFont = Content.Load<SpriteFont>("ScoreFont");
+
+            background = new Sprite(world.textureManager["BG-Layer"]);
             cell = new Cell(world.textureManager["Cell"]);
+            statsGUI = new StatsGUI(world.textureManager["helix-resource"], scoreFont, cell);
 
             world.rooms.CurrentState.AddUpdate(cell.Update);
             world.rooms.CurrentState.AddUpdate(resourceManager.Update);
+            world.rooms.CurrentState.AddUpdate(statsGUI.Update);
+            world.rooms.CurrentState.AddDraw(background.Draw);
             world.rooms.CurrentState.AddDraw(resourceManager.Draw);
             world.rooms.CurrentState.AddDraw(cell.Draw);
+            world.rooms.CurrentState.AddDraw(statsGUI.Draw);
         }
 
         /// <summary>
@@ -95,7 +108,7 @@ namespace cellution
                 previousMouseState.LeftButton == ButtonState.Released)
             {
                 
-                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
+                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.Transform);
                 cell.targetPosition = new Vector2(transformedMouseState.X, transformedMouseState.Y);
                 cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
                 cell.velocity.Normalize();

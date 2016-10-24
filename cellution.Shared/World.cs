@@ -19,6 +19,7 @@ namespace cellution
         public TextureManager textureManager;
 
         public PermanantStates<Room> rooms;
+        public CellManager cellManager;
 
         public World(GraphicsDeviceManager graphics)
         {

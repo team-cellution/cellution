@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
@@ -17,7 +17,7 @@ namespace cellution
         public bool selected;
         public string name;
         public int id;
-        public ArrayList dna = new ArrayList();
+        public List<Tuple<int, double>> dna = new List<Tuple<int, double>>();
 
         public Cell(Texture2D loadedTex, int x, int y) : base(loadedTex)
         {

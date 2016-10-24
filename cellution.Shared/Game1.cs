@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections;
+using System;
 
 namespace cellution
 {
@@ -19,7 +21,8 @@ namespace cellution
 
         const string UpgradeRoom = "upgrade";
 
-        Cell cell;
+        Cell cell1;
+        Cell cell2;
 
         SpriteFont scoreFont;
         StatsGUI statsGUI;
@@ -75,16 +78,25 @@ namespace cellution
             scoreFont = Content.Load<SpriteFont>("ScoreFont");
 
             background = new Background(world.textureManager["BG-Layer"], graphics.GraphicsDevice.Viewport);
-            cell = new Cell(world.textureManager["Cell"]);
-            statsGUI = new StatsGUI(world.textureManager["helix-resource"], scoreFont, cell);
+            cell1 = new Cell(world.textureManager["Cell"], 0, 0);
+            cell2 = new Cell(world.textureManager["Cell"], 100, 100);
+            cell1.name = "one";
+            cell2.name = "two";
+            world.cells.Add(cell1);
+            world.cells.Add(cell2);
+            statsGUI = new StatsGUI(world.textureManager["helix-resource"], scoreFont, cell1);
 
-            world.rooms.CurrentState.AddUpdate(cell.Update);
             world.rooms.CurrentState.AddUpdate(resourceManager.Update);
             world.rooms.CurrentState.AddUpdate(statsGUI.Update);
             world.rooms.CurrentState.AddDraw(background.Draw);
             world.rooms.CurrentState.AddDraw(resourceManager.Draw);
-            world.rooms.CurrentState.AddDraw(cell.Draw);
+            foreach (Cell cell in world.cells)
+            {
+                world.rooms.CurrentState.AddUpdate(cell.Update);
+                world.rooms.CurrentState.AddDraw(cell.Draw);
+            }
             world.rooms.CurrentState.AddDraw(statsGUI.Draw);
+
         }
 
         /// <summary>
@@ -114,11 +126,30 @@ namespace cellution
             if (mouseState.LeftButton == ButtonState.Pressed &&
                 previousMouseState.LeftButton == ButtonState.Released)
             {
-                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
-                cell.targetPosition = new Vector2(transformedMouseState.X, transformedMouseState.Y);
-                cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
-                cell.velocity.Normalize();
-                cell.velocity *= 5.0f;
+                foreach (Cell cell in world.cells)
+                {
+                    Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
+                    if (cell.rectange.Contains(transformedMouseState.ToPoint()))
+                    {
+                        world.selectedId = cell.id;
+                    }
+                }
+            }
+
+            if (mouseState.RightButton == ButtonState.Pressed &&
+                previousMouseState.RightButton == ButtonState.Released)
+            {
+                foreach (Cell cell in world.cells)
+                {
+                    Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
+                    if (cell.id == world.selectedId)
+                    {
+                        cell.targetPosition = new Vector2(transformedMouseState.X, transformedMouseState.Y);
+                        cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
+                        cell.velocity.Normalize();
+                        cell.velocity *= 5.0f;
+                    }
+                }
             }
 
             if (keyboardState.IsKeyDown(Keys.Space) &&
@@ -139,26 +170,29 @@ namespace cellution
             List<Resource> resourcesToRemove = new List<Resource>();
             foreach (Resource resource in resourceManager.resources)
             {
-                if (cell.rectange.Contains(resource.sprite.rectange))
+                foreach (Cell cell in world.cells)
                 {
-                    if (resource.resourceType == Resource.ResourceTypes.A)
+                    if (cell.rectange.Contains(resource.sprite.rectange))
                     {
-                        cell.a++;
+                        if (resource.resourceType == Resource.ResourceTypes.A)
+                        {
+                            cell.a++;
+                        }
+                        else if (resource.resourceType == Resource.ResourceTypes.C)
+                        {
+                            cell.c++;
+                        }
+                        else if (resource.resourceType == Resource.ResourceTypes.G)
+                        {
+                            cell.g++;
+                        }
+                        else if (resource.resourceType == Resource.ResourceTypes.T)
+                        {
+                            cell.t++;
+                        }
+                        resourcesToRemove.Add(resource);
+                        resourceManager.currentResources--;
                     }
-                    else if (resource.resourceType == Resource.ResourceTypes.C)
-                    {
-                        cell.c++;
-                    }
-                    else if (resource.resourceType == Resource.ResourceTypes.G)
-                    {
-                        cell.g++;
-                    }
-                    else if (resource.resourceType == Resource.ResourceTypes.T)
-                    {
-                        cell.t++;
-                    }
-                    resourcesToRemove.Add(resource);
-                    resourceManager.currentResources--;
                 }
             }
             foreach (Resource resource in resourcesToRemove)

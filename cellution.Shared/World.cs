@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -19,6 +19,8 @@ namespace cellution
         public TextureManager textureManager;
 
         public PermanantStates<Room> rooms;
+        public ArrayList cells = new ArrayList();
+        public int selectedId;
 
         public World(GraphicsDeviceManager graphics)
         {
@@ -26,6 +28,7 @@ namespace cellution
             spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
             rooms = new PermanantStates<Room>();
             rooms.AddState("game", new Room(graphics));
+            selectedId = -1;
         }
 
         public void Update()

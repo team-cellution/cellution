@@ -13,9 +13,14 @@ namespace cellution
         public int c;
         public int g;
         public int t;
+        public bool selected;
+        public string name;
+        public int id;
 
-        public Cell(Texture2D loadedTex) : base(loadedTex)
+        public Cell(Texture2D loadedTex, int x, int y) : base(loadedTex)
         {
+            position = new Vector2(x, y);
+            id = World.Random.Next(0, int.MaxValue);
         }
 
         public override void Update()

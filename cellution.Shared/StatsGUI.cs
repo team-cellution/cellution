@@ -32,9 +32,9 @@ namespace cellution
         private TextItem cScore;
         private TextItem gScore;
         private TextItem tScore;
-        private Cell cell;
+        private CellManager cellManager;
 
-        public StatsGUI(Texture2D background, SpriteFont spriteFont, Cell cell)
+        public StatsGUI(Texture2D background, SpriteFont spriteFont, CellManager cellManager)
         {
             this.background = new Sprite(background);
             this.background.origin = Vector2.Zero;
@@ -50,16 +50,26 @@ namespace cellution
             tScore = new TextItem(spriteFont, "0");
             tScore.origin = Vector2.Zero;
             tScore.color = new Color(190, 245, 255);
-            this.cell = cell;
+            this.cellManager = cellManager;
             Position = this.background.position;
         }
 
         public void Update()
         {
-            aScore.Text = cell.a.ToString();
-            cScore.Text = cell.c.ToString();
-            gScore.Text = cell.g.ToString();
-            tScore.Text = cell.t.ToString();
+            if (cellManager.selectedCell == null)
+            {
+                aScore.Text = cellManager.a.ToString();
+                cScore.Text = cellManager.c.ToString();
+                gScore.Text = cellManager.g.ToString();
+                tScore.Text = cellManager.t.ToString();
+            }
+            else
+            {
+                aScore.Text = cellManager.selectedCell.a.ToString();
+                cScore.Text = cellManager.selectedCell.c.ToString();
+                gScore.Text = cellManager.selectedCell.g.ToString();
+                tScore.Text = cellManager.selectedCell.t.ToString();
+            }
             aScore.position = position + new Vector2(xOffset, 30);
             cScore.position = position + new Vector2(xOffset, aScore.position.Y + aScore.TextSize.Y + 10);
             gScore.position = position + new Vector2(xOffset, cScore.position.Y + cScore.TextSize.Y + 10);

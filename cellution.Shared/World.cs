@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -19,7 +19,7 @@ namespace cellution
         public TextureManager textureManager;
 
         public PermanantStates<Room> rooms;
-        public ArrayList cells = new ArrayList();
+        public List<Cell> cells = new List<Cell>();
         public int selectedId;
 
         public World(GraphicsDeviceManager graphics)

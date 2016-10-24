@@ -20,6 +20,7 @@ namespace cellution
 
         public PermanantStates<Room> rooms;
         public CellManager cellManager;
+        public ResourceManager resourceManager;
 
         public World(GraphicsDeviceManager graphics)
         {

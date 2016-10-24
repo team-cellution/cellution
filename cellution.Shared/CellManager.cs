@@ -25,7 +25,9 @@ namespace cellution
         public void CreateCell()
         {
             cells.Add(new Cell(cellTexture, 0, 0));
+            cells[0].name = "one";
             cells.Add(new Cell(cellTexture, 100, 100));
+            cells[1].name = "two";
         }
 
         public void Update()

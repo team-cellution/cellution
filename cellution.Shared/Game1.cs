@@ -13,7 +13,6 @@ namespace cellution
     {
         GraphicsDeviceManager graphics;
         public static World world;
-        ResourceManager resourceManager;
 
         public KeyboardState previousKeyboardState;
         public MouseState previousMouseState;
@@ -53,7 +52,7 @@ namespace cellution
             world.textureManager = new TextureManager(Content);
             world.rooms.AddState(UpgradeRoom, new Room(graphics));
 
-            resourceManager = new ResourceManager(graphics.GraphicsDevice.Viewport);
+            world.resourceManager = new ResourceManager(graphics.GraphicsDevice.Viewport);
 
             base.Initialize();
         }
@@ -78,10 +77,10 @@ namespace cellution
             world.cellManager.CreateCell();
             statsGUI = new StatsGUI(world.textureManager["helix-resource"], scoreFont, world.cellManager);
 
-            world.rooms.CurrentState.AddUpdate(resourceManager.Update);
+            world.rooms.CurrentState.AddUpdate(world.resourceManager.Update);
             world.rooms.CurrentState.AddUpdate(statsGUI.Update);
             world.rooms.CurrentState.AddDraw(background.Draw);
-            world.rooms.CurrentState.AddDraw(resourceManager.Draw);
+            world.rooms.CurrentState.AddDraw(world.resourceManager.Draw);
             world.rooms.CurrentState.AddUpdate(world.cellManager.Update);
             world.rooms.CurrentState.AddDraw(world.cellManager.Draw);
             world.rooms.CurrentState.AddDraw(statsGUI.Draw);
@@ -137,6 +136,7 @@ namespace cellution
                         cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
                         cell.velocity.Normalize();
                         cell.velocity *= 5.0f;
+                        cell.behavior = -2;
                     }
                 }
             }
@@ -157,7 +157,7 @@ namespace cellution
             world.Update();
 
             List<Resource> resourcesToRemove = new List<Resource>();
-            foreach (Resource resource in resourceManager.resources)
+            foreach (Resource resource in world.resourceManager.resources)
             {
                 foreach (Cell cell in world.cellManager.cells)
                 {
@@ -180,13 +180,13 @@ namespace cellution
                             cell.t++;
                         }
                         resourcesToRemove.Add(resource);
-                        resourceManager.currentResources--;
+                        world.resourceManager.currentResources--;
                     }
                 }
             }
             foreach (Resource resource in resourcesToRemove)
             {
-                resourceManager.resources.Remove(resource);
+                world.resourceManager.resources.Remove(resource);
             }
             resourcesToRemove.Clear();
 

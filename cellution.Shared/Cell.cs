@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System.Linq;
 
 namespace cellution
 {
@@ -16,11 +17,20 @@ namespace cellution
         public bool selected;
         public string name;
         public int id;
+        public ArrayList dna = new ArrayList();
 
         public Cell(Texture2D loadedTex, int x, int y) : base(loadedTex)
         {
             position = new Vector2(x, y);
             id = World.Random.Next(0, int.MaxValue);
+            foreach (int i in Enumerable.Range(0, 6))
+            {
+                dna.Add(new Tuple<int, double>(i, 1.0/7));
+            }
+            foreach(Tuple<int, double> p in dna)
+            {
+                Console.Write(p+", ");
+            }
         }
 
         public override void Update()

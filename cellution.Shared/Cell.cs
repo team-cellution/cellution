@@ -18,13 +18,18 @@ namespace cellution
         public int id;
         public List<Tuple<int, double>> dna = new List<Tuple<int, double>>();
         private double rand;
-        public int behavior; // -1 is nothing, -2 is player command
+        public int behavior; // -1 is nothing, -2 is player command, -3 is mid cell action
+        public bool divide;
+        public int lastBehavior = -4;
+        public int waitTimer;
 
         public Cell(Texture2D loadedTex, int x, int y) : base(loadedTex)
         {
             position = new Vector2(x, y);
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
+            divide = false;
+            waitTimer = 10000;
             foreach (int i in Enumerable.Range(0, 6))
             {
                 dna.Add(new Tuple<int, double>(i, 1.0/7));
@@ -46,7 +51,8 @@ namespace cellution
             rand = World.Random.NextDouble();
             if (behavior == -1) // If the Cell is doing nothing.
             {
-                foreach (Tuple<int, double> gene in dna)
+                // Currently Broken
+                /*foreach (Tuple<int, double> gene in dna)
                 {
                     rand -= gene.Item2;
                     if (rand <= 0)
@@ -54,9 +60,14 @@ namespace cellution
                         behavior = gene.Item1;
                         break;
                     }
-                }
+                }*/
+                behavior = World.Random.Next(0, 8);
             }
-            Console.WriteLine(name + " " + behavior);
+            if (lastBehavior != behavior)
+            {
+                Console.WriteLine(name + " " + behavior);
+            }
+            lastBehavior = behavior;
             switch (behavior)
             {
                 // Eat A
@@ -77,18 +88,34 @@ namespace cellution
                     break;
                 // Divide
                 case 4:
+                    if (a >= 10 && c >= 10 && g >= 10 && t >= 10)
+                    {
+                        divide = true;
+                    }
                     behavior = -1;
                     break;
                 // Wander
                 case 5:
-                    behavior = -1;
+                    goTo(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height)));//randomVector);
+                    behavior = -3;
                     break;
                 // Procreate
                 case 6:
                     behavior = -1;
                     break;
-                // Attack
+                // Wait
                 case 7:
+                    // Broken
+                    /*
+                    if (waitTimer > 0)
+                    {
+                        waitTimer -= 1;
+                    }
+                    else
+                    {
+                        waitTimer = 10000;
+                        behavior = -1;
+                    }*/
                     behavior = -1;
                     break;
                 // Mid Action, Do Nothing
@@ -137,15 +164,21 @@ namespace cellution
             }
             if (newTarget != position)
             {
-                targetPosition = newTarget;
-                velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
-                velocity.Normalize();
-                velocity *= 5.0f;
+                goTo(newTarget);
+                behavior = -3;
             }
             else // If there are none of these resources
             {
                 behavior = -1;
             }
+        }
+
+        public void goTo(Vector2 target)
+        {
+            targetPosition = target;
+            velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
+            velocity.Normalize();
+            velocity *= 5.0f;
         }
     }
 }

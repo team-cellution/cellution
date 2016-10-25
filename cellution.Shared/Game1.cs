@@ -132,10 +132,7 @@ namespace cellution
                     Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
                     if (cell == world.cellManager.selectedCell)
                     {
-                        cell.targetPosition = new Vector2(transformedMouseState.X, transformedMouseState.Y);
-                        cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
-                        cell.velocity.Normalize();
-                        cell.velocity *= 5.0f;
+                        cell.goTo(new Vector2(transformedMouseState.X, transformedMouseState.Y));
                         cell.behavior = -2;
                     }
                 }

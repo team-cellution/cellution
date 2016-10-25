@@ -11,7 +11,7 @@ namespace cellution
         public List<Resource> resources;
         private const int totalResources = 10;
         public int currentResources = 0;
-        private Viewport viewport;
+        public Viewport viewport;
 
         public ResourceManager(Viewport viewport)
         {

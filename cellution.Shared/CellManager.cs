@@ -25,11 +25,11 @@ namespace cellution
 
         public void CreateCell(GraphicsDeviceManager graphics)
         {
-            Cell cell = new Cell(graphics, new SpriteSheetInfo(726, 726));
-            cell.animations["divide"] = cell.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 1000, true);
-            cell.animations.CurrentAnimationName = "divide";
-            //cells.Add(new Cell(cellTexture, 0, 0));
-            cells.Add(cell);
+            //Cell cell = new Cell(graphics, new SpriteSheetInfo(726, 726));
+            //cell.animations["divide"] = cell.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 1000, true);
+            //cell.animations.CurrentAnimationName = "divide";
+            cells.Add(new Cell(cellTexture, 0, 0));
+            //cells.Add(cell);
             cells[0].name = "one";
             cells.Add(new Cell(cellTexture, 100, 100));
             cells[1].name = "two";

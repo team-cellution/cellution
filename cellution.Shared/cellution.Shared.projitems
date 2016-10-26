@@ -12,6 +12,7 @@
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Animations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Background.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Cell.cs" />
@@ -23,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Room.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SpriteBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SpriteSheet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StatsGUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextureManager.cs" />

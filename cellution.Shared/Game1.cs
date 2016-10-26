@@ -26,6 +26,8 @@ namespace cellution
         StatsGUI statsGUI;
         Background background;
 
+        // cell division 726x726
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace cellution
 {
@@ -11,12 +12,28 @@ namespace cellution
         public Texture2D tex;
         public Rectangle drawRect;
         public Matrix spriteTransform;
-
+        public Animations animations;
+        private bool isAnimated;
 
         public Sprite(Texture2D loadedTex)
         {
             tex = loadedTex;
             drawRect = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), 0, 0);
+            rectange = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), tex.Width, tex.Height);
+            origin = new Vector2(tex.Width / 2, tex.Height / 2);
+            isAnimated = false;
+        }
+
+        public Sprite(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
+        {
+            isAnimated = true;
+            drawRect = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), 0, 0);
+            animations = new Animations(spriteSheetInfo);
+            tex = new Texture2D(graphics.GraphicsDevice, animations.spriteSheetInfo.FrameWidth, animations.spriteSheetInfo.FrameHeight);
+            if (string.IsNullOrEmpty(animations.CurrentAnimationName))
+            {
+                animations.currentSpriteSheet = animations.spriteSheets.First().Value;
+            }
             rectange = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), tex.Width, tex.Height);
             origin = new Vector2(tex.Width / 2, tex.Height / 2);
         }
@@ -31,6 +48,11 @@ namespace cellution
                 Matrix.CreateScale(scale) * Matrix.CreateRotationZ(rotation) *
                 Matrix.CreateTranslation(new Vector3(position, 0.0f));
             rectange = CalculateBoundingRectangle(new Rectangle(0, 0, tex.Width, tex.Height), spriteTransform);
+        }
+
+        private void UpdateAnimation()
+        {
+
         }
 
         public override void Draw(SpriteBatch spriteBatch)

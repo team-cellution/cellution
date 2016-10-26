@@ -86,7 +86,7 @@ namespace cellution
                 frameCount,
                 1,
                 SpriteSheet.Directions.LeftToRight,
-                frameTime,
+                TimeSpan.FromMilliseconds(frameTime).Ticks,
                 loop);
         }
 
@@ -98,7 +98,7 @@ namespace cellution
                 columns,
                 rows,
                 direction,
-                frameTime,
+                TimeSpan.FromMilliseconds(frameTime).Ticks,
                 loop);
         }
 
@@ -110,7 +110,7 @@ namespace cellution
                 columns,
                 rows,
                 direction,
-                frameTime,
+                TimeSpan.FromMilliseconds(frameTime).Ticks,
                 loop);
         }
     }

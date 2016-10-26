@@ -18,7 +18,7 @@ namespace cellution
         public int width;
         public int height;
         SpriteBatch spriteBatch;
-        public TextureManager textureManager;
+        public static TextureManager textureManager;
 
         public PermanantStates<Room> rooms;
         public CellManager cellManager;
@@ -32,9 +32,9 @@ namespace cellution
             rooms.AddState("game", new Room(graphics));
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            rooms.CurrentState.Update();
+            rooms.CurrentState.Update(gameTime);
         }
 
         public void BeginDraw()

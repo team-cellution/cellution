@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace cellution
@@ -22,15 +23,19 @@ namespace cellution
             selectedCell = null;
         }
 
-        public void CreateCell()
+        public void CreateCell(GraphicsDeviceManager graphics)
         {
-            cells.Add(new Cell(cellTexture, 0, 0));
+            Cell cell = new Cell(graphics, new SpriteSheetInfo(726, 726));
+            cell.animations["divide"] = cell.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 1000, true);
+            cell.animations.CurrentAnimationName = "divide";
+            //cells.Add(new Cell(cellTexture, 0, 0));
+            cells.Add(cell);
             cells[0].name = "one";
             cells.Add(new Cell(cellTexture, 100, 100));
             cells[1].name = "two";
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             a = 0;
             c = 0;
@@ -39,7 +44,7 @@ namespace cellution
             List<Cell> cellsToDivide = new List<Cell>();
             foreach (Cell cell in cells)
             {
-                cell.Update();
+                cell.Update(gameTime);
                 if (cell.divide == true)
                 {
                     cellsToDivide.Add(cell);

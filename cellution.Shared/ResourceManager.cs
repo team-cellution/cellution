@@ -19,7 +19,7 @@ namespace cellution
             resources = new List<Resource>();
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             while (currentResources < totalResources)
             {
@@ -31,7 +31,7 @@ namespace cellution
 
             foreach (Resource resource in resources)
             {
-                resource.Update();
+                resource.Update(gameTime);
             }
         }
 

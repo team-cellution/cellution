@@ -30,7 +30,7 @@ namespace cellution
             drawRect = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), 0, 0);
             animations = new Animations(spriteSheetInfo);
             tex = new Texture2D(graphics.GraphicsDevice, animations.spriteSheetInfo.FrameWidth, animations.spriteSheetInfo.FrameHeight);
-            if (string.IsNullOrEmpty(animations.CurrentAnimationName))
+            if (!string.IsNullOrEmpty(animations.CurrentAnimationName))
             {
                 animations.currentSpriteSheet = animations.spriteSheets.First().Value;
             }
@@ -38,8 +38,12 @@ namespace cellution
             origin = new Vector2(tex.Width / 2, tex.Height / 2);
         }
 
-        public override void Update()
+        public virtual void Update(GameTime gameTime)
         {
+            if (isAnimated)
+            {
+                UpdateAnimation(gameTime);
+            }
             position += velocity;
             drawRect.X = (int)Math.Round(position.X);
             drawRect.Y = (int)Math.Round(position.Y);
@@ -50,14 +54,74 @@ namespace cellution
             rectange = CalculateBoundingRectangle(new Rectangle(0, 0, tex.Width, tex.Height), spriteTransform);
         }
 
-        private void UpdateAnimation()
+        private void UpdateAnimation(GameTime gameTime)
         {
+            if (animations.active)
+            {
+                animations.elapsedTime += gameTime.ElapsedGameTime.Ticks;
+                if (animations.elapsedTime > animations.currentSpriteSheet.frameTime)
+                {
+                    long framesMoved = animations.elapsedTime / animations.currentSpriteSheet.frameTime;
+                    for (int i = 0; i < framesMoved; i++)
+                    {
+                        animations.currentFrame++;
+                        if (animations.currentFrame == animations.currentSpriteSheet.frameCount)
+                        {
+                            if (!animations.currentSpriteSheet.loop)
+                            {
+                                animations.active = false;
+                                animations.elapsedTime = 0;
+                                animations.currentFrame = 0;
+                                break;
+                            }
+                            else
+                            {
+                                animations.currentFrame = 0;
+                            }
+                        }
+                    }
+                }
+                animations.elapsedTime = animations.elapsedTime % animations.currentSpriteSheet.frameTime;
+            }
+            UpdateTexture();
+        }
 
+        private void UpdateTexture()
+        {
+            Rectangle oldSourceRect = animations.sourceRect;
+            if (animations.currentSpriteSheet.direction == SpriteSheet.Directions.LeftToRight)
+            {
+                animations.sourceRect = new Rectangle(
+                    (animations.currentFrame % animations.currentSpriteSheet.columns) * animations.spriteSheetInfo.FrameWidth,
+                    (animations.currentFrame / animations.currentSpriteSheet.columns) * animations.spriteSheetInfo.FrameHeight,
+                    animations.spriteSheetInfo.FrameWidth,
+                    animations.spriteSheetInfo.FrameHeight);
+            }
+            else if (animations.currentSpriteSheet.direction == SpriteSheet.Directions.TopToBottom)
+            {
+                animations.sourceRect = new Rectangle(
+                    (animations.currentFrame / animations.currentSpriteSheet.rows) * animations.spriteSheetInfo.FrameWidth,
+                    (animations.currentFrame % animations.currentSpriteSheet.rows) * animations.spriteSheetInfo.FrameHeight,
+                    animations.spriteSheetInfo.FrameWidth,
+                    animations.spriteSheetInfo.FrameHeight);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(tex, position, null, color * alpha, MathHelper.ToRadians(rotation), origin, scale, SpriteEffects.None, 0);
+            if (isAnimated)
+            {
+                DrawAnimation(spriteBatch);
+            }
+            else
+            {
+                spriteBatch.Draw(tex, position, null, color * alpha, MathHelper.ToRadians(rotation), origin, scale, SpriteEffects.None, 0);
+            }
+        }
+
+        public void DrawAnimation(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(animations.CurrentAnimation.tex, position, animations.sourceRect, color * alpha, MathHelper.ToRadians(rotation), origin, scale, SpriteEffects.None, 0);
         }
 
         public void DrawRect(SpriteBatch spriteBatch)

@@ -51,5 +51,14 @@ namespace cellution
                 cell.Draw(spriteBatch);
             }
         }
+
+        public void DrawSelected(SpriteBatch spriteBatch)
+        {
+            if (selectedCell != null)
+            {
+                selectedCell.Draw(spriteBatch);
+            }
+            
+        }
     }
 }

@@ -87,6 +87,10 @@ namespace cellution
             world.rooms.CurrentState.AddUpdate(cellManager.Update);
             world.rooms.CurrentState.AddDraw(cellManager.Draw);
             world.rooms.CurrentState.AddDraw(statsGUI.Draw);
+            world.rooms.GetState(UpgradeRoom).AddDraw(cellManager.DrawSelected);
+            world.rooms.GetState(UpgradeRoom).AddDraw(statsGUI.Draw);
+            world.rooms.GetState(UpgradeRoom).AddUpdate(statsGUI.Update);
+
         }
 
         /// <summary>

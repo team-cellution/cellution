@@ -15,10 +15,14 @@ namespace cellution
         }
 
         GraphicsDeviceManager graphics;
+        public int width;
+        public int height;
         SpriteBatch spriteBatch;
         public TextureManager textureManager;
 
         public PermanantStates<Room> rooms;
+        public CellManager cellManager;
+        public ResourceManager resourceManager;
 
         public World(GraphicsDeviceManager graphics)
         {

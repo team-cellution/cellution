@@ -13,14 +13,11 @@ namespace cellution
     {
         GraphicsDeviceManager graphics;
         public static World world;
-        ResourceManager resourceManager;
 
         public KeyboardState previousKeyboardState;
         public MouseState previousMouseState;
 
         const string UpgradeRoom = "upgrade";
-
-        CellManager cellManager;
 
         SpriteFont scoreFont;
         StatsGUI statsGUI;
@@ -57,7 +54,7 @@ namespace cellution
             world.textureManager = new TextureManager(Content);
             world.rooms.AddState(UpgradeRoom, new Room(graphics));
 
-            resourceManager = new ResourceManager(graphics.GraphicsDevice.Viewport);
+            world.resourceManager = new ResourceManager(graphics.GraphicsDevice.Viewport);
 
             base.Initialize();
         }
@@ -78,17 +75,21 @@ namespace cellution
             scoreFont = Content.Load<SpriteFont>("ScoreFont");
 
             background = new Background(world.textureManager["BG-Layer"], graphics.GraphicsDevice.Viewport);
-            cellManager = new CellManager(world.textureManager["Cell"]);
-            cellManager.CreateCell();
-            statsGUI = new StatsGUI(world.textureManager["helix-resource"], scoreFont, cellManager);
+            world.cellManager = new CellManager(world.textureManager["Cell"]);
+            world.cellManager.CreateCell();
+            statsGUI = new StatsGUI(world.textureManager["helix-resource"], scoreFont, world.cellManager);
 
-            world.rooms.CurrentState.AddUpdate(resourceManager.Update);
+            world.rooms.CurrentState.AddUpdate(world.resourceManager.Update);
             world.rooms.CurrentState.AddUpdate(statsGUI.Update);
             world.rooms.CurrentState.AddDraw(background.Draw);
-            world.rooms.CurrentState.AddDraw(resourceManager.Draw);
-            world.rooms.CurrentState.AddUpdate(cellManager.Update);
-            world.rooms.CurrentState.AddDraw(cellManager.Draw);
+            world.rooms.CurrentState.AddDraw(world.resourceManager.Draw);
+            world.rooms.CurrentState.AddUpdate(world.cellManager.Update);
+            world.rooms.CurrentState.AddDraw(world.cellManager.Draw);
             world.rooms.CurrentState.AddDraw(statsGUI.Draw);
+            world.rooms.GetState(UpgradeRoom).AddDraw(world.cellManager.DrawSelected);
+            world.rooms.GetState(UpgradeRoom).AddDraw(statsGUI.Draw);
+            world.rooms.GetState(UpgradeRoom).AddUpdate(statsGUI.Update);
+
         }
 
         /// <summary>
@@ -118,13 +119,13 @@ namespace cellution
             if (mouseState.LeftButton == ButtonState.Pressed &&
                 previousMouseState.LeftButton == ButtonState.Released)
             {
-                cellManager.selectedCell = null;
-                foreach (Cell cell in cellManager.cells)
+                world.cellManager.selectedCell = null;
+                foreach (Cell cell in world.cellManager.cells)
                 {
                     Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
                     if (cell.rectange.Contains(transformedMouseState.ToPoint()))
                     {
-                        cellManager.selectedCell = cell;
+                        world.cellManager.selectedCell = cell;
                     }
                 }
             }
@@ -132,15 +133,13 @@ namespace cellution
             if (mouseState.RightButton == ButtonState.Pressed &&
                 previousMouseState.RightButton == ButtonState.Released)
             {
-                foreach (Cell cell in cellManager.cells)
+                foreach (Cell cell in world.cellManager.cells)
                 {
                     Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
-                    if (cell == cellManager.selectedCell)
+                    if (cell == world.cellManager.selectedCell)
                     {
-                        cell.targetPosition = new Vector2(transformedMouseState.X, transformedMouseState.Y);
-                        cell.velocity = new Vector2(cell.targetPosition.X - cell.position.X, cell.targetPosition.Y - cell.position.Y);
-                        cell.velocity.Normalize();
-                        cell.velocity *= 5.0f;
+                        cell.goTo(new Vector2(transformedMouseState.X, transformedMouseState.Y));
+                        cell.behavior = -2;
                     }
                 }
             }
@@ -161,9 +160,9 @@ namespace cellution
             world.Update();
 
             List<Resource> resourcesToRemove = new List<Resource>();
-            foreach (Resource resource in resourceManager.resources)
+            foreach (Resource resource in world.resourceManager.resources)
             {
-                foreach (Cell cell in cellManager.cells)
+                foreach (Cell cell in world.cellManager.cells)
                 {
                     if (cell.rectange.Contains(resource.sprite.rectange))
                     {
@@ -184,13 +183,13 @@ namespace cellution
                             cell.t++;
                         }
                         resourcesToRemove.Add(resource);
-                        resourceManager.currentResources--;
+                        world.resourceManager.currentResources--;
                     }
                 }
             }
             foreach (Resource resource in resourcesToRemove)
             {
-                resourceManager.resources.Remove(resource);
+                world.resourceManager.resources.Remove(resource);
             }
             resourcesToRemove.Clear();
 

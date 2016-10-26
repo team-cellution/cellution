@@ -54,7 +54,7 @@ namespace cellution
             Position = this.background.position;
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             if (cellManager.selectedCell == null)
             {

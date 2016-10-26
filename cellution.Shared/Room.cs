@@ -8,34 +8,34 @@ namespace cellution
 {
     public class Room
     {
-        private List<Tuple<Action, int>> updateMethods;
+        private List<Tuple<Action<GameTime>, int>> updateMethods;
         private List<Tuple<Action<SpriteBatch>, int>> drawMethods;
 
         public PermanantStates<Camera> cameras;
 
         public Room(GraphicsDeviceManager graphics)
         {
-            updateMethods = new List<Tuple<Action, int>>();
+            updateMethods = new List<Tuple<Action<GameTime>, int>>();
             drawMethods = new List<Tuple<Action<SpriteBatch>, int>>();
             cameras = new PermanantStates<Camera>();
             cameras.AddState("camera1", new Camera(graphics.GraphicsDevice.Viewport, Camera.CameraFocus.TopLeft));
         }
 
-        public void AddUpdate(Action updateMethod)
+        public void AddUpdate(Action<GameTime> updateMethod)
         {
             AddUpdate(updateMethod, 0);
         }
 
-        public void AddUpdate(Action updateMethod, int order)
+        public void AddUpdate(Action<GameTime> updateMethod, int order)
         {
-            updateMethods.Add(new Tuple<Action, int>(updateMethod, order));
+            updateMethods.Add(new Tuple<Action<GameTime>, int>(updateMethod, order));
             updateMethods.Sort((a, b) =>
             {
                 return a.Item2.CompareTo(b.Item2);
             });
         }
 
-        public void RemoveUpdate(Action updateMethod)
+        public void RemoveUpdate(Action<GameTime> updateMethod)
         {
             for (int i = 0; i < updateMethods.Count; i++)
             {
@@ -47,12 +47,12 @@ namespace cellution
             }
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             cameras.CurrentState.Update();
             foreach (var method in updateMethods)
             {
-                method.Item1.Invoke();
+                method.Item1.Invoke(gameTime);
             }
         }
 

@@ -23,6 +23,8 @@ namespace cellution
         StatsGUI statsGUI;
         Background background;
 
+        // cell division 726x726
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -49,7 +51,7 @@ namespace cellution
         protected override void Initialize()
         {
             world = new World(graphics);
-            world.textureManager = new TextureManager(Content);
+            World.textureManager = new TextureManager(Content);
             world.rooms.AddState(UpgradeRoom, new Room(graphics));
 
             world.resourceManager = new ResourceManager(graphics.GraphicsDevice.Viewport);
@@ -63,19 +65,20 @@ namespace cellution
         /// </summary>
         protected override void LoadContent()
         {
-            world.textureManager.Load("Cell");
-            world.textureManager.Load("a");
-            world.textureManager.Load("c");
-            world.textureManager.Load("g");
-            world.textureManager.Load("t");
-            world.textureManager.Load("BG-Layer");
-            world.textureManager.Load("helix-resource");
+            World.textureManager.Load("Cell");
+            World.textureManager.Load("a");
+            World.textureManager.Load("c");
+            World.textureManager.Load("g");
+            World.textureManager.Load("t");
+            World.textureManager.Load("BG-Layer");
+            World.textureManager.Load("helix-resource");
+            World.textureManager.Load("Cell-Division");
             scoreFont = Content.Load<SpriteFont>("ScoreFont");
 
-            background = new Background(world.textureManager["BG-Layer"], graphics.GraphicsDevice.Viewport);
-            world.cellManager = new CellManager(world.textureManager["Cell"]);
-            world.cellManager.CreateCell();
-            statsGUI = new StatsGUI(world.textureManager["helix-resource"], scoreFont, world.cellManager);
+            background = new Background(World.textureManager["BG-Layer"], graphics.GraphicsDevice.Viewport);
+            world.cellManager = new CellManager(World.textureManager["Cell"]);
+            world.cellManager.CreateCell(graphics);
+            statsGUI = new StatsGUI(World.textureManager["helix-resource"], scoreFont, world.cellManager);
 
             world.rooms.CurrentState.AddUpdate(world.resourceManager.Update);
             world.rooms.CurrentState.AddUpdate(statsGUI.Update);
@@ -87,7 +90,6 @@ namespace cellution
             world.rooms.GetState(UpgradeRoom).AddDraw(world.cellManager.DrawSelected);
             world.rooms.GetState(UpgradeRoom).AddDraw(statsGUI.Draw);
             world.rooms.GetState(UpgradeRoom).AddUpdate(statsGUI.Update);
-
         }
 
         /// <summary>
@@ -155,7 +157,7 @@ namespace cellution
                 }
             }
 
-            world.Update();
+            world.Update(gameTime);
 
             List<Resource> resourcesToRemove = new List<Resource>();
             foreach (Resource resource in world.resourceManager.resources)

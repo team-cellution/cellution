@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace cellution
 {
@@ -24,25 +25,25 @@ namespace cellution
             resourceType = (ResourceTypes)type;
             if (resourceType == ResourceTypes.A)
             {
-                sprite = new Sprite(Game1.world.textureManager["a"]);
+                sprite = new Sprite(World.textureManager["a"]);
             }
             else if (resourceType == ResourceTypes.C)
             {
-                sprite = new Sprite(Game1.world.textureManager["c"]);
+                sprite = new Sprite(World.textureManager["c"]);
             }
             else if (resourceType == ResourceTypes.G)
             {
-                sprite = new Sprite(Game1.world.textureManager["g"]);
+                sprite = new Sprite(World.textureManager["g"]);
             }
             else if (resourceType == ResourceTypes.T)
             {
-                sprite = new Sprite(Game1.world.textureManager["t"]);
+                sprite = new Sprite(World.textureManager["t"]);
             }
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            sprite.Update();
+            sprite.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)

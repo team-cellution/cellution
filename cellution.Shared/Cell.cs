@@ -40,7 +40,20 @@ namespace cellution
             }*/
         }
 
-        public override void Update()
+        public Cell(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (graphics, spriteSheetInfo)
+        {
+            position = Vector2.Zero;
+            id = World.Random.Next(0, int.MaxValue);
+            behavior = -1;
+            divide = false;
+            waitTimer = 10000;
+            foreach (int i in Enumerable.Range(0, 6))
+            {
+                dna.Add(new Tuple<int, double>(i, 1.0 / 7));
+            }
+        }
+
+        public override void Update(GameTime gameTime)
         {
             if (Vector2.Distance(position, targetPosition) < 5)
             {
@@ -122,7 +135,7 @@ namespace cellution
                 default:
                     break;
             }
-            base.Update();
+            base.Update(gameTime);
         }
         private void eat(int resourceType)
         {

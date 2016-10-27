@@ -32,7 +32,7 @@ namespace cellution
             waitTimer = 10000;
             foreach (int i in Enumerable.Range(0, 6))
             {
-                dna.Add(new Tuple<int, double>(i, 1.0/7));
+                dna.Add(new Tuple<int, double>(i, 1.0/8));
             }
             /*foreach(Tuple<int, double> p in dna)
             {
@@ -61,11 +61,11 @@ namespace cellution
                 behavior = -1;
             }
 
-            rand = World.Random.NextDouble();
             if (behavior == -1) // If the Cell is doing nothing.
             {
+                rand = World.Random.NextDouble();
                 // Currently Broken
-                /*foreach (Tuple<int, double> gene in dna)
+                foreach (Tuple<int, double> gene in dna)
                 {
                     rand -= gene.Item2;
                     if (rand <= 0)
@@ -73,8 +73,8 @@ namespace cellution
                         behavior = gene.Item1;
                         break;
                     }
-                }*/
-                behavior = World.Random.Next(0, 8);
+                }
+                //behavior = World.Random.Next(0, 8);
             }
             if (lastBehavior != behavior)
             {

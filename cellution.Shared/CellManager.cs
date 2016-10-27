@@ -15,10 +15,14 @@ namespace cellution
         public int g;
         public int t;
         public Cell selectedCell;
+        List<Cell> cellsToDivide;
+        List<Cell> cellsToKill;
 
         public CellManager(Texture2D cellTexture)
         {
             cells = new List<Cell>();
+            cellsToDivide = new List<Cell>();
+            cellsToKill = new List<Cell>();
             this.cellTexture = cellTexture;
             selectedCell = null;
         }
@@ -41,7 +45,6 @@ namespace cellution
             c = 0;
             g = 0;
             t = 0;
-            List<Cell> cellsToDivide = new List<Cell>();
             foreach (Cell cell in cells)
             {
                 cell.Update(gameTime);
@@ -49,6 +52,10 @@ namespace cellution
                 {
                     cellsToDivide.Add(cell);
                     cell.divide = false;
+                }
+                if (cell.kill == true)
+                {
+                    cellsToKill.Add(cell);
                 }
                 a += cell.a;
                 c += cell.c;
@@ -60,7 +67,14 @@ namespace cellution
             {
                 divideCell(cell);
             }
-
+            // Kill Step
+            foreach (Cell cell in cellsToKill)
+            {
+                Console.WriteLine("Killed " + cell.id);
+                killCell(cell);
+            }
+            cellsToDivide.Clear();
+            cellsToKill.Clear();
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -92,6 +106,11 @@ namespace cellution
             newCell.c = cell.c;
             newCell.g = cell.g;
             newCell.t = cell.t;
+        }
+
+        public void killCell(Cell cell)
+        {
+            Game1.world.cellManager.cells.Remove(cell);
         }
     }
 }

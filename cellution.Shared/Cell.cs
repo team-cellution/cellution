@@ -24,6 +24,7 @@ namespace cellution
         public TimeSpan waitUntil;
         public DateTime deathDay;
         public bool kill;
+        public Cell targetCell;
 
         public Cell(Texture2D loadedTex, int x, int y) : base(loadedTex)
         {
@@ -35,6 +36,7 @@ namespace cellution
             waitUntil = new TimeSpan(0);
             deathDay = DateTime.Now.AddMinutes(4);
             kill = false;
+            targetCell = this;
 
             foreach (int i in Enumerable.Range(0, 8))
             {
@@ -56,6 +58,7 @@ namespace cellution
             waitUntil = new TimeSpan(0);
             deathDay = DateTime.Now.AddMinutes(4);
             kill = false;
+            targetCell = this;
 
             foreach (int i in Enumerable.Range(0, 8))
             {
@@ -74,10 +77,13 @@ namespace cellution
             if (behavior != 7 && Vector2.Distance(position, targetPosition) < 5)
             {
                 velocity = Vector2.Zero;
-                behavior = -1;
+                if (behavior != 6)
+                {
+                    behavior = -1;
+                }
             }
 
-            /*/if (lastBehavior == -4)
+            /*if (lastBehavior == -4)
             {
                 behavior = 7;
             }*/
@@ -96,10 +102,10 @@ namespace cellution
                 }
             }
 
-            /*if (lastBehavior != behavior)
+            if (lastBehavior != behavior)
             {
                 Console.WriteLine(id + " " + behavior);
-            }*/
+            }
 
             lastBehavior = behavior;
             switch (behavior)
@@ -133,9 +139,54 @@ namespace cellution
                     goTo(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height)));//randomVector);
                     behavior = -3;
                     break;
-                // Procreate
+                // Attack
+                // ADD Chase length
                 case 6:
-                    behavior = -1;
+                    if (targetCell.id == id)
+                    {
+                        double nTDist = Double.MaxValue;
+                        foreach (Cell cell in Game1.world.cellManager.cells)
+                        {
+                            if (cell.id != id)
+                            {
+                                double temp = Vector2.Distance(cell.position, position);
+                                if (temp < nTDist)
+                                {
+                                    nTDist = temp;
+                                    targetCell = cell;
+                                }
+                            }
+                        }
+                        // If it couldn't find any other cells, reset behavior
+                        if (targetCell.id == id)
+                        {
+                            behavior = -1;
+                        }
+                    }
+                    // If target lives
+                    else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
+                    {
+                        // If at target, kill them and reset
+                        if (Vector2.Distance(position, targetCell.position) < 5)
+                        {
+                            targetCell.kill = true;
+                            a += targetCell.a;
+                            c += targetCell.c;
+                            g += targetCell.g;
+                            t += targetCell.t;
+                            targetCell = this;
+                            behavior = -1;
+                        }
+                        else
+                        {
+                            // Give chase
+                            goTo(targetCell.position);
+                        }
+                    }
+                    else // If target died before it could be killed
+                    {
+                        behavior = -1;
+                    }
                     break;
                 // Wait
                 case 7:

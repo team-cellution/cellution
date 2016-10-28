@@ -34,7 +34,7 @@ namespace cellution
             lastBehavior = -4;
             divide = false;
             waitUntil = new TimeSpan(0);
-            deathDay = DateTime.Now.AddMinutes(4);
+            deathDay = DateTime.Now.AddHours(1);
             kill = false;
             targetCell = this;
 
@@ -56,7 +56,7 @@ namespace cellution
             lastBehavior = -4;
             divide = false;
             waitUntil = new TimeSpan(0);
-            deathDay = DateTime.Now.AddMinutes(4);
+            deathDay = DateTime.Now.AddHours(1);
             kill = false;
             targetCell = this;
 
@@ -214,34 +214,34 @@ namespace cellution
             Resource.ResourceTypes rType;
             if (resourceType == 0)
             {
-                if (a >= 15)
+                /*if (a >= 15)
                 {
                     return;
-                }
+                }*/
                 rType = Resource.ResourceTypes.A;
             }
             else if (resourceType == 1)
             {
-                if (c >= 15)
+                /*if (c >= 15)
                 {
                     return;
-                }
+                }*/
                 rType = Resource.ResourceTypes.C;
             }
             else if (resourceType == 2)
             {
-                if (g >= 15)
+                /*if (g >= 15)
                 {
                     return;
-                }
+                }*/
                 rType = Resource.ResourceTypes.G;
             }
             else if (resourceType == 3)
             {
-                if (t >= 15)
+                /*if (t >= 15)
                 {
                     return;
-                }
+                }*/
                 rType = Resource.ResourceTypes.T;
             }
             else
@@ -279,7 +279,7 @@ namespace cellution
             targetPosition = target;
             velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
             velocity.Normalize();
-            velocity *= 5.0f;
+            velocity *= 2.0f;
         }
     }
 }

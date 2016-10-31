@@ -7,8 +7,9 @@ using System.Linq;
 
 namespace cellution
 {
-    public class Cell : Sprite
+    public class Cell
     {
+        public Sprite sprite;
         public Vector2 targetPosition;
         public int a;
         public int c;
@@ -27,9 +28,16 @@ namespace cellution
         public Cell targetCell;
         public bool DoneDividing { get; set; }
 
+<<<<<<< HEAD
         public Cell(Vector2 pos, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (texture, graphics, spriteSheetInfo)
         {
             this.position = pos;
+=======
+        public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
+        {
+            sprite = new Sprite(texture, graphics, spriteSheetInfo);
+            sprite.position = position;
+>>>>>>> origin/master
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -41,36 +49,7 @@ namespace cellution
             dna = new DNA();
         }
 
-        public Cell(Texture2D loadedTex, int x, int y, DNA parentDNA) : base(loadedTex)
-        {
-            position = new Vector2(x, y);
-            id = World.Random.Next(0, int.MaxValue);
-            behavior = -1;
-            lastBehavior = -4;
-            divide = false;
-            waitUntil = new TimeSpan(0);
-            deathDay = DateTime.Now.AddHours(1);
-            kill = false;
-            targetCell = this;
-            dna = parentDNA;
-        }
-
-        public Cell(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (graphics, spriteSheetInfo)
-        {
-            position = Vector2.Zero;
-            this.position = position;
-            id = World.Random.Next(0, int.MaxValue);
-            behavior = -1;
-            lastBehavior = -4;
-            divide = false;
-            waitUntil = new TimeSpan(0);
-            deathDay = DateTime.Now.AddHours(1);
-            kill = false;
-            targetCell = this;
-            dna = new DNA();
-        }
-
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (DateTime.Now.CompareTo(deathDay) == 1)
             {
@@ -78,11 +57,17 @@ namespace cellution
                 kill = true;
             }
 
+<<<<<<< HEAD
             Console.WriteLine(id + " Dist2Target:" + Vector2.Distance(position, targetPosition));
             if (behavior != 7 && Vector2.Distance(position, targetPosition) < 10)
             {
                 Console.WriteLine("Stopping " + id);
                 velocity = Vector2.Zero;
+=======
+            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < 5)
+            {
+                sprite.velocity = Vector2.Zero;
+>>>>>>> origin/master
                 if (behavior != 6)
                 {
                     behavior = -1;
@@ -90,10 +75,14 @@ namespace cellution
             }
 
             // Quick fix for off screen
+<<<<<<< HEAD
             /*if (position.X >= 1920 || position.X < 0 || position.Y >= 1080 || position.Y < 0)
+=======
+            if (sprite.position.X >= 1920 || sprite.position.X < 0 || sprite.position.Y >= 1080 || sprite.position.Y < 0)
+>>>>>>> origin/master
             {
                 behavior = -1;
-                velocity = new Vector2(0, 0);
+                sprite.velocity = new Vector2(0, 0);
                 targetPosition = new Vector2(0, 0);
             }*/
 
@@ -167,7 +156,7 @@ namespace cellution
                         {
                             if (cell.id != id)
                             {
-                                double temp = Vector2.Distance(cell.position, position);
+                                double temp = Vector2.Distance(cell.sprite.position, sprite.position);
                                 if (temp < nTDist)
                                 {
                                     nTDist = temp;
@@ -186,7 +175,7 @@ namespace cellution
                     else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
                     {
                         // If at target, kill them and reset
-                        if (Vector2.Distance(position, targetCell.position) < 5)
+                        if (Vector2.Distance(sprite.position, targetCell.sprite.position) < 5)
                         {
                             targetCell.kill = true;
                             a += targetCell.a * 3 / 4;
@@ -199,7 +188,7 @@ namespace cellution
                         else
                         {
                             // Give chase
-                            goTo(targetCell.position);
+                            goTo(targetCell.sprite.position);
                         }
                     }
                     else // If target died before it could be killed
@@ -213,7 +202,7 @@ namespace cellution
                     {
                         waitUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, 1));
                         //Console.WriteLine("gameTime: " + gameTime.TotalGameTime + " waitUntil: " + waitUntil);
-                        velocity = Vector2.Zero;
+                        sprite.velocity = Vector2.Zero;
                     }
                     else if (gameTime.TotalGameTime.CompareTo(waitUntil) == 1)
                     {
@@ -226,7 +215,7 @@ namespace cellution
                 default:
                     break;
             }
-            base.Update(gameTime);
+            sprite.Update(gameTime);
         }
         private void eat(int resourceType)
         {
@@ -268,13 +257,13 @@ namespace cellution
                 throw new System.ArgumentException("Parameter must be between 0 (A) and 3 (T)", "resourceType");
             }
             
-            Vector2 newTarget = position;
+            Vector2 newTarget = sprite.position;
             double nTDist = Double.MaxValue;
             foreach (Resource r in Game1.world.resourceManager.resources)
             {
                 if (r.resourceType == rType)
                 {
-                    double temp = Vector2.Distance(r.sprite.position, position);
+                    double temp = Vector2.Distance(r.sprite.position, sprite.position);
                     if (temp < nTDist)
                     {
                         nTDist = temp;
@@ -282,7 +271,7 @@ namespace cellution
                     }
                 }
             }
-            if (newTarget != position)
+            if (newTarget != sprite.position)
             {
                 goTo(newTarget);
                 behavior = -3;
@@ -296,6 +285,7 @@ namespace cellution
         public void goTo(Vector2 target)
         {
             // Quick fix for cells going off screen
+<<<<<<< HEAD
             //if (targetPosition.X < 1920 && targetPosition.X >= 0 && targetPosition.Y < 1080 && targetPosition.Y >= 0)
             //{
             //Console.WriteLine("Target Pos:" + targetPosition);
@@ -304,10 +294,20 @@ namespace cellution
             velocity.Normalize();
             velocity *= 10.0f;//2.0f;
             /*
+=======
+            if (targetPosition.X < 1920 && targetPosition.X >= 0 && targetPosition.Y < 1080 && targetPosition.Y >= 0)
+            {
+                Console.WriteLine("Target Pos:" + targetPosition);
+                targetPosition = target;
+                sprite.velocity = new Vector2(targetPosition.X - sprite.position.X, targetPosition.Y - sprite.position.Y);
+                sprite.velocity.Normalize();
+                sprite.velocity *= 10.0f;//2.0f;
+            }
+>>>>>>> origin/master
             else
             {
                 behavior = -1;
-                velocity = Vector2.Zero;
+                sprite.velocity = Vector2.Zero;
                 targetPosition = new Vector2(0, 0);
             }*/
         }
@@ -315,6 +315,11 @@ namespace cellution
         public void SetDoneDividing()
         {
             DoneDividing = true;
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            sprite.Draw(spriteBatch);
         }
     }
 }

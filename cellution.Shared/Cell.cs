@@ -58,7 +58,7 @@ namespace cellution
         public Cell(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (graphics, spriteSheetInfo)
         {
             position = Vector2.Zero;
-            this.position = position;
+            this.position = new Vector2(10, 10);
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -87,12 +87,20 @@ namespace cellution
                 }
             }
 
-            /*if (lastBehavior == -4)
+            // Quick fix for off screen
+            if (position.X >= 1920 || position.X < 0 || position.Y >= 1080 || position.Y < 0)
             {
-                behavior = 7;
-            }*/
+                behavior = -1;
+                velocity = new Vector2(0, 0);
+                targetPosition = new Vector2(0, 0);
+            }
 
-            if (behavior == -1) // If the Cell is doing nothing.
+                /*if (lastBehavior == -4)
+                {
+                    behavior = 7;
+                }*/
+
+                if (behavior == -1) // If the Cell is doing nothing.
             {
                 rand = World.Random.NextDouble();
                 int tempIndex = 0;
@@ -285,10 +293,21 @@ namespace cellution
 
         public void goTo(Vector2 target)
         {
-            targetPosition = target;
-            velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
-            velocity.Normalize();
-            velocity *= 10.0f;//2.0f;
+            // Quick fix for cells going off screen
+            if (targetPosition.X < 1920 && targetPosition.X >= 0 && targetPosition.Y < 1080 && targetPosition.Y >= 0)
+            {
+                Console.WriteLine("Target Pos:" + targetPosition);
+                targetPosition = target;
+                velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
+                velocity.Normalize();
+                velocity *= 10.0f;//2.0f;
+            }
+            else
+            {
+                behavior = -1;
+                velocity = Vector2.Zero;
+                targetPosition = new Vector2(0, 0);
+            }
         }
 
         public void SetDoneDividing()

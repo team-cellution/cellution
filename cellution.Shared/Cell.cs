@@ -29,7 +29,7 @@ namespace cellution
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (texture, graphics, spriteSheetInfo)
         {
-            position = new Vector2(10, 10);//x, y);
+            this.position = position;
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -58,7 +58,7 @@ namespace cellution
         public Cell(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (graphics, spriteSheetInfo)
         {
             position = Vector2.Zero;
-            this.position = new Vector2(10, 10);
+            this.position = position;
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;

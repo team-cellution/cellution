@@ -75,7 +75,7 @@ namespace cellution
                 if (cell.DoneDividing)
                 {
                     cell.DoneDividing = false;
-                    DivideCell(cell);
+                    //DivideCell(cell);
                 }
             }
             // Divide Step

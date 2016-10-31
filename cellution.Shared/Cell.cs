@@ -29,8 +29,7 @@ namespace cellution
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (texture, graphics, spriteSheetInfo)
         {
-<<<<<<< HEAD
-            position = new Vector2(x, y);
+            position = new Vector2(10, 10);//x, y);
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -59,9 +58,7 @@ namespace cellution
         public Cell(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (graphics, spriteSheetInfo)
         {
             position = Vector2.Zero;
-=======
             this.position = position;
->>>>>>> origin/master
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -113,10 +110,10 @@ namespace cellution
                 }
             }
 
-            /*if (lastBehavior != behavior)
+            if (lastBehavior != behavior)
             {
                 Console.WriteLine(id + " " + behavior);
-            }*/
+            }
 
             lastBehavior = behavior;
             switch (behavior)

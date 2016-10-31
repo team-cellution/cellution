@@ -54,8 +54,10 @@ namespace cellution
             c = 0;
             g = 0;
             t = 0;
+            Console.WriteLine("\n");
             foreach (Cell cell in cells)
             {
+                Console.WriteLine(cell.id + " X:" + cell.position.X + " Y:" + cell.position.Y);
                 cell.Update(gameTime);
                 if (cell.divide == true)
                 {
@@ -79,14 +81,14 @@ namespace cellution
             // Divide Step
             foreach (Cell cell in cellsToDivide)
             {
-<<<<<<< HEAD
+//<<<<<<< HEAD
                 if (cells.Count <= cellCap)
                 {
-                    divideCell(cell);
+                    DivideCell(cell);
                 }
-=======
+//=======
                 StartCellDivision(cell);
->>>>>>> origin/master
+//>>>>>>> origin/master
             }
             // Kill Step
             foreach (Cell cell in cellsToKill)
@@ -126,11 +128,11 @@ namespace cellution
             cell.c = cell.c / 2;
             cell.g = cell.g / 2;
             cell.t = cell.t / 2;
-<<<<<<< HEAD
-            cells.Add(new Cell(cellTexture, (int) cell.position.X, (int) cell.position.Y, cell.dna));
-=======
+//<<<<<<< HEAD
+            //cells.Add(new Cell(cellTexture, (int) cell.position.X, (int) cell.position.Y, cell.dna));
+//=======
             cells.Add(CreateCell(cell.position));
->>>>>>> origin/master
+//>>>>>>> origin/master
             Cell newCell = cells[cells.Count-1];
             newCell.a = cell.a;
             newCell.c = cell.c;

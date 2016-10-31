@@ -26,6 +26,8 @@ namespace cellution
         public DateTime deathDay;
         public bool kill;
         public Cell targetCell;
+        public double speed;
+        public double attackRange;
         public bool DoneDividing { get; set; }
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
@@ -41,6 +43,8 @@ namespace cellution
             kill = false;
             targetCell = this;
             dna = new DNA();
+            speed = 10.0;
+            attackRange = 200;
         }
 
         public void Update(GameTime gameTime)
@@ -51,7 +55,7 @@ namespace cellution
                 kill = true;
             }
 
-            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < 5)
+            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < speed)
             {
                 sprite.velocity = Vector2.Zero;
                 if (behavior != 6)
@@ -60,18 +64,10 @@ namespace cellution
                 }
             }
 
-            // Quick fix for off screen
-            if (sprite.position.X >= 1920 || sprite.position.X < 0 || sprite.position.Y >= 1080 || sprite.position.Y < 0)
+            /*if (lastBehavior == -4)
             {
-                behavior = -1;
-                sprite.velocity = new Vector2(0, 0);
-                targetPosition = new Vector2(0, 0);
-            }
-
-                /*if (lastBehavior == -4)
-                {
-                    behavior = 7;
-                }*/
+                behavior = 7;
+            }*/
 
             if (behavior == -1) // If the Cell is doing nothing.
             {
@@ -148,8 +144,9 @@ namespace cellution
                         }
                         //Console.WriteLine("Dist " + nTDist);
                         // If it couldn't find any cells in range, reset behavior
-                        if (nTDist < 300 || targetCell.id == id)
+                        if (nTDist > attackRange || targetCell.id == id)
                         {
+                            targetCell = this;
                             behavior = -1;
                         }
                     }
@@ -157,7 +154,7 @@ namespace cellution
                     else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
                     {
                         // If at target, kill them and reset
-                        if (Vector2.Distance(sprite.position, targetCell.sprite.position) < 5)
+                        if (Vector2.Distance(sprite.position, targetCell.sprite.position) < speed)
                         {
                             targetCell.kill = true;
                             a += targetCell.a * 3 / 4;
@@ -266,21 +263,10 @@ namespace cellution
 
         public void goTo(Vector2 target)
         {
-            // Quick fix for cells going off screen
-            if (targetPosition.X < 1920 && targetPosition.X >= 0 && targetPosition.Y < 1080 && targetPosition.Y >= 0)
-            {
-                Console.WriteLine("Target Pos:" + targetPosition);
-                targetPosition = target;
-                sprite.velocity = new Vector2(targetPosition.X - sprite.position.X, targetPosition.Y - sprite.position.Y);
-                sprite.velocity.Normalize();
-                sprite.velocity *= 10.0f;//2.0f;
-            }
-            else
-            {
-                behavior = -1;
-                sprite.velocity = Vector2.Zero;
-                targetPosition = new Vector2(0, 0);
-            }
+            targetPosition = target;
+            sprite.velocity = new Vector2(targetPosition.X - sprite.position.X, targetPosition.Y - sprite.position.Y);
+            sprite.velocity.Normalize();
+            sprite.velocity *= (float) speed;//2.0f;
         }
 
         public void SetDoneDividing()

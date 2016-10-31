@@ -31,9 +31,15 @@ namespace cellution
         public void SpawnCell()
         {
             cells.Add(CreateCell(Vector2.Zero));
-            cells[0].name = "one";
+            //cells[0].name = "one";
             cells.Add(CreateCell(new Vector2(100, 100)));
-            cells[1].name = "two";
+            //cells[1].name = "two";
+            cells.Add(CreateCell(new Vector2(200, 200)));
+            cells.Add(CreateCell(new Vector2(500, 500)));
+            cells.Add(CreateCell(new Vector2(250, 200)));
+            cells.Add(CreateCell(new Vector2(550, 500)));
+            cells.Add(CreateCell(new Vector2(200, 100)));
+            cells.Add(CreateCell(new Vector2(900, 500)));
         }
 
         private Cell CreateCell(Vector2 position)
@@ -78,13 +84,14 @@ namespace cellution
             c = 0;
             g = 0;
             t = 0;
-            Console.WriteLine("\n");
+
+            //Console.WriteLine("\n");
             List<Cell> cellsToDivide = new List<Cell>();
             List<Cell> cellsToKill = new List<Cell>();
             List<Cell> cellsToCreate = new List<Cell>();
             foreach (Cell cell in cells)
             {
-                Console.WriteLine(cell.id + " X:" + cell.sprite.position.X + " Y:" + cell.sprite.position.Y);
+                //Console.WriteLine(cell.id + " X:" + cell.sprite.position.X + " Y:" + cell.sprite.position.Y);
                 cell.Update(gameTime);
                 if (cell.divide == true)
                 {
@@ -159,7 +166,7 @@ namespace cellution
             newCell.c = cell.c;
             newCell.g = cell.g;
             newCell.t = cell.t;
-            cells.Add(cell);
+            cells.Add(newCell);
         }
 
         public void KillCell(Cell cell)

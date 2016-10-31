@@ -23,8 +23,6 @@ namespace cellution
         StatsGUI statsGUI;
         Background background;
 
-        // cell division 726x726
-
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -124,7 +122,7 @@ namespace cellution
                 foreach (Cell cell in world.cellManager.cells)
                 {
                     Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
-                    if (cell.rectange.Contains(transformedMouseState.ToPoint()))
+                    if (cell.sprite.rectange.Contains(transformedMouseState.ToPoint()))
                     {
                         world.cellManager.selectedCell = cell;
                     }
@@ -167,7 +165,7 @@ namespace cellution
                 {
                     if (!resourcesToRemove.Contains(resource))
                     {
-                        if (cell.rectange.Contains(resource.sprite.rectange))
+                        if (cell.sprite.rectange.Contains(resource.sprite.rectange))
                         {
                             if (resource.resourceType == Resource.ResourceTypes.A)
                             {

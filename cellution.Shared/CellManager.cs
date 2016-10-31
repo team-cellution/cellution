@@ -16,8 +16,7 @@ namespace cellution
         public int g;
         public int t;
         public Cell selectedCell;
-        List<Cell> cellsToDivide;
-        List<Cell> cellsToKill;
+        
         public int cellCap;
 
         public CellManager(Texture2D cellTexture, GraphicsDeviceManager graphics)
@@ -25,8 +24,6 @@ namespace cellution
             this.cellTexture = cellTexture;
             this.graphics = graphics;
             cells = new List<Cell>();
-            cellsToDivide = new List<Cell>();
-            cellsToKill = new List<Cell>();
             selectedCell = null;
             cellCap = 15;
         }
@@ -42,9 +39,9 @@ namespace cellution
         private Cell CreateCell(Vector2 position)
         {
             Cell cell = new Cell(position, cellTexture, graphics, new SpriteSheetInfo(120, 120));
-            cell.animations["divide"] = cell.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 250, false);
-            cell.animations.CurrentAnimationName = null;
-            cell.animations.SetFrameAction("divide", 8, cell.SetDoneDividing);
+            cell.sprite.animations["divide"] = cell.sprite.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 250, false);
+            cell.sprite.animations.CurrentAnimationName = null;
+            cell.sprite.animations.SetFrameAction("divide", 8, cell.SetDoneDividing);
             return cell;
         }
 
@@ -55,9 +52,12 @@ namespace cellution
             g = 0;
             t = 0;
             Console.WriteLine("\n");
+            List<Cell> cellsToDivide = new List<Cell>();
+            List<Cell> cellsToKill = new List<Cell>();
+            List<Cell> cellsToCreate = new List<Cell>();
             foreach (Cell cell in cells)
             {
-                Console.WriteLine(cell.id + " X:" + cell.position.X + " Y:" + cell.position.Y);
+                Console.WriteLine(cell.id + " X:" + cell.sprite.position.X + " Y:" + cell.sprite.position.Y);
                 cell.Update(gameTime);
                 if (cell.divide == true)
                 {
@@ -75,20 +75,20 @@ namespace cellution
                 if (cell.DoneDividing)
                 {
                     cell.DoneDividing = false;
-                    //DivideCell(cell);
+                    cellsToCreate.Add(cell);
                 }
             }
             // Divide Step
             foreach (Cell cell in cellsToDivide)
             {
-//<<<<<<< HEAD
                 if (cells.Count <= cellCap)
                 {
-                    DivideCell(cell);
+                    StartCellDivision(cell);
                 }
-//=======
-                StartCellDivision(cell);
-//>>>>>>> origin/master
+            }
+            foreach (Cell cell in cellsToCreate)
+            {
+                DivideCell(cell);
             }
             // Kill Step
             foreach (Cell cell in cellsToKill)
@@ -96,8 +96,6 @@ namespace cellution
                 Console.WriteLine("Killed " + cell.id);
                 KillCell(cell);
             }
-            cellsToDivide.Clear();
-            cellsToKill.Clear();
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -119,30 +117,27 @@ namespace cellution
 
         public void StartCellDivision(Cell cell)
         {
-            cell.animations.CurrentAnimationName = "divide";
+            cell.sprite.animations.CurrentAnimationName = "divide";
         }
 
         public void DivideCell(Cell cell)
         {
-            cell.a = cell.a / 2;
-            cell.c = cell.c / 2;
-            cell.g = cell.g / 2;
-            cell.t = cell.t / 2;
-//<<<<<<< HEAD
-            //cells.Add(new Cell(cellTexture, (int) cell.position.X, (int) cell.position.Y, cell.dna));
-//=======
-            cells.Add(CreateCell(cell.position));
-//>>>>>>> origin/master
-            Cell newCell = cells[cells.Count-1];
+            cell.a /= 2;
+            cell.c /= 2;
+            cell.g /= 2;
+            cell.t /= 2;
+            Cell newCell = CreateCell(cell.sprite.position);
+            newCell.dna = cell.dna;
             newCell.a = cell.a;
             newCell.c = cell.c;
             newCell.g = cell.g;
             newCell.t = cell.t;
+            cells.Add(cell);
         }
 
         public void KillCell(Cell cell)
         {
-            Game1.world.cellManager.cells.Remove(cell);
+            cells.Remove(cell);
         }
     }
 }

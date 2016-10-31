@@ -25,32 +25,11 @@ namespace cellution
         public DateTime deathDay;
         public bool kill;
         public Cell targetCell;
+        public bool DoneDividing { get; set; }
 
-        public Cell(Texture2D loadedTex, int x, int y) : base(loadedTex)
+        public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (texture, graphics, spriteSheetInfo)
         {
-            position = new Vector2(x, y);
-            id = World.Random.Next(0, int.MaxValue);
-            behavior = -1;
-            lastBehavior = -4;
-            divide = false;
-            waitUntil = new TimeSpan(0);
-            deathDay = DateTime.Now.AddHours(1);
-            kill = false;
-            targetCell = this;
-
-            foreach (int i in Enumerable.Range(0, 8))
-            {
-                dna.Add(new Tuple<int, double>(i, .125));
-            }
-            /*foreach(Tuple<int, double> p in dna)
-            {
-                Console.Write(p+", ");
-            }*/
-        }
-
-        public Cell(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (graphics, spriteSheetInfo)
-        {
-            position = Vector2.Zero;
+            this.position = position;
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -280,6 +259,11 @@ namespace cellution
             velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
             velocity.Normalize();
             velocity *= 2.0f;
+        }
+
+        public void SetDoneDividing()
+        {
+            DoneDividing = true;
         }
     }
 }

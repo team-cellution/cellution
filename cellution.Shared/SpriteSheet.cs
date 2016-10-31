@@ -33,6 +33,7 @@ namespace cellution
         public Directions direction;
         public long frameTime;
         public bool loop;
+        internal List<List<Action>> frameActions;
 
         public SpriteSheet(Texture2D loadedTex,
             SpriteSheetInfo info,
@@ -51,6 +52,11 @@ namespace cellution
             this.direction = direction;
             this.frameTime = frameTime;
             this.loop = loop;
+            frameActions = new List<List<Action>>();
+            for (int i = 0; i < frameCount; i++)
+            {
+                frameActions.Add(new List<Action>());
+            }
         }
     }
 }

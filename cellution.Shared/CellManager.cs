@@ -9,6 +9,7 @@ namespace cellution
     public class CellManager
     {
         private Texture2D cellTexture;
+        private GraphicsDeviceManager graphics;
         public List<Cell> cells;
         public int a;
         public int c;
@@ -18,25 +19,31 @@ namespace cellution
         List<Cell> cellsToDivide;
         List<Cell> cellsToKill;
 
-        public CellManager(Texture2D cellTexture)
+        public CellManager(Texture2D cellTexture, GraphicsDeviceManager graphics)
         {
+            this.cellTexture = cellTexture;
+            this.graphics = graphics;
             cells = new List<Cell>();
             cellsToDivide = new List<Cell>();
             cellsToKill = new List<Cell>();
-            this.cellTexture = cellTexture;
             selectedCell = null;
         }
 
-        public void CreateCell(GraphicsDeviceManager graphics)
+        public void SpawnCell()
         {
-            //Cell cell = new Cell(graphics, new SpriteSheetInfo(726, 726));
-            //cell.animations["divide"] = cell.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 1000, true);
-            //cell.animations.CurrentAnimationName = "divide";
-            cells.Add(new Cell(cellTexture, 0, 0));
-            //cells.Add(cell);
+            cells.Add(CreateCell(Vector2.Zero));
             cells[0].name = "one";
-            cells.Add(new Cell(cellTexture, 100, 100));
+            cells.Add(CreateCell(new Vector2(100, 100)));
             cells[1].name = "two";
+        }
+
+        private Cell CreateCell(Vector2 position)
+        {
+            Cell cell = new Cell(position, cellTexture, graphics, new SpriteSheetInfo(120, 120));
+            cell.animations["divide"] = cell.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 250, false);
+            cell.animations.CurrentAnimationName = null;
+            cell.animations.SetFrameAction("divide", 8, cell.SetDoneDividing);
+            return cell;
         }
 
         public void Update(GameTime gameTime)
@@ -61,17 +68,22 @@ namespace cellution
                 c += cell.c;
                 g += cell.g;
                 t += cell.t;
+                if (cell.DoneDividing)
+                {
+                    cell.DoneDividing = false;
+                    DivideCell(cell);
+                }
             }
             // Divide Step
             foreach (Cell cell in cellsToDivide)
             {
-                divideCell(cell);
+                StartCellDivision(cell);
             }
             // Kill Step
             foreach (Cell cell in cellsToKill)
             {
                 Console.WriteLine("Killed " + cell.id);
-                killCell(cell);
+                KillCell(cell);
             }
             cellsToDivide.Clear();
             cellsToKill.Clear();
@@ -92,15 +104,20 @@ namespace cellution
             {
                 selectedCell.Draw(spriteBatch);
             }
-        } 
+        }
 
-        public void divideCell(Cell cell)
+        public void StartCellDivision(Cell cell)
+        {
+            cell.animations.CurrentAnimationName = "divide";
+        }
+
+        public void DivideCell(Cell cell)
         {
             cell.a = cell.a / 2;
             cell.c = cell.c / 2;
             cell.g = cell.g / 2;
             cell.t = cell.t / 2;
-            cells.Add(new Cell(cellTexture, (int) cell.position.X, (int) cell.position.Y));
+            cells.Add(CreateCell(cell.position));
             Cell newCell = cells[cells.Count-1];
             newCell.a = cell.a;
             newCell.c = cell.c;
@@ -108,7 +125,7 @@ namespace cellution
             newCell.t = cell.t;
         }
 
-        public void killCell(Cell cell)
+        public void KillCell(Cell cell)
         {
             Game1.world.cellManager.cells.Remove(cell);
         }

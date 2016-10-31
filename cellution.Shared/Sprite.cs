@@ -24,6 +24,11 @@ namespace cellution
             isAnimated = false;
         }
 
+        public Sprite(Texture2D baseTex, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : this(graphics, spriteSheetInfo)
+        {
+            tex = baseTex;
+        }
+
         public Sprite(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
         {
             isAnimated = true;
@@ -79,11 +84,21 @@ namespace cellution
                                 animations.currentFrame = 0;
                             }
                         }
+                        if (animations.currentFrame >= 0 && animations.currentFrame < animations.currentSpriteSheet.frameActions.Count)
+                        {
+                            foreach (Action action in animations.currentSpriteSheet.frameActions[animations.currentFrame])
+                            {
+                                action.Invoke();
+                            }
+                        }
                     }
                 }
                 animations.elapsedTime = animations.elapsedTime % animations.currentSpriteSheet.frameTime;
             }
-            UpdateTexture();
+            if (animations.CurrentAnimationName != null)
+            {
+                UpdateTexture();
+            }
         }
 
         private void UpdateTexture()
@@ -109,7 +124,7 @@ namespace cellution
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (isAnimated)
+            if (isAnimated && animations.active)
             {
                 DrawAnimation(spriteBatch);
             }

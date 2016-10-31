@@ -51,20 +51,14 @@ namespace cellution
             c = 0;
             g = 0;
             t = 0;
-<<<<<<< HEAD
+
             //Console.WriteLine("\n");
-            foreach (Cell cell in cells)
-            {
-                //Console.WriteLine(cell.id + " X:" + cell.position.X + " Y:" + cell.position.Y);
-=======
-            Console.WriteLine("\n");
             List<Cell> cellsToDivide = new List<Cell>();
             List<Cell> cellsToKill = new List<Cell>();
             List<Cell> cellsToCreate = new List<Cell>();
             foreach (Cell cell in cells)
             {
-                Console.WriteLine(cell.id + " X:" + cell.sprite.position.X + " Y:" + cell.sprite.position.Y);
->>>>>>> origin/master
+                //Console.WriteLine(cell.id + " X:" + cell.sprite.position.X + " Y:" + cell.sprite.position.Y);
                 cell.Update(gameTime);
                 if (cell.divide == true)
                 {

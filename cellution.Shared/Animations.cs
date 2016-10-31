@@ -24,15 +24,24 @@ namespace cellution
             }
             set
             {
-                if (spriteSheets.ContainsKey(value))
+                if (value == null)
                 {
-                    currentAnimationName = value;
-                    currentSpriteSheet = spriteSheets[currentAnimationName];
-                    ResetAnimation();
+                    currentAnimationName = null;
+                    currentSpriteSheet = null;
+                    active = false;
                 }
                 else
                 {
-                    throw new Exception("That animation does not exist.");
+                    if (spriteSheets.ContainsKey(value))
+                    {
+                        currentAnimationName = value;
+                        currentSpriteSheet = spriteSheets[currentAnimationName];
+                        ResetAnimation();
+                    }
+                    else
+                    {
+                        throw new Exception("That animation does not exist.");
+                    }
                 }
             }
         }
@@ -112,6 +121,18 @@ namespace cellution
                 direction,
                 TimeSpan.FromMilliseconds(frameTime).Ticks,
                 loop);
+        }
+
+        public void SetFrameAction(string animation, int frameNumber, Action action)
+        {
+            if (spriteSheets.ContainsKey(animation))
+            {
+                spriteSheets[animation].frameActions[frameNumber].Add(action);
+            }
+            else
+            {
+                throw new Exception("That animation does not exist.");
+            }
         }
     }
 }

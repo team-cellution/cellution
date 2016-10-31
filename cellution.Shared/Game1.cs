@@ -66,6 +66,7 @@ namespace cellution
         protected override void LoadContent()
         {
             World.textureManager.Load("Cell");
+            World.textureManager.Load("new_cell");
             World.textureManager.Load("a");
             World.textureManager.Load("c");
             World.textureManager.Load("g");
@@ -76,8 +77,8 @@ namespace cellution
             scoreFont = Content.Load<SpriteFont>("ScoreFont");
 
             background = new Background(World.textureManager["BG-Layer"], graphics.GraphicsDevice.Viewport);
-            world.cellManager = new CellManager(World.textureManager["Cell"]);
-            world.cellManager.CreateCell(graphics);
+            world.cellManager = new CellManager(World.textureManager["new_cell"], graphics);
+            world.cellManager.SpawnCell();
             statsGUI = new StatsGUI(World.textureManager["helix-resource"], scoreFont, world.cellManager);
 
             world.rooms.CurrentState.AddUpdate(world.resourceManager.Update);

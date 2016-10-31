@@ -25,9 +25,11 @@ namespace cellution
         public DateTime deathDay;
         public bool kill;
         public Cell targetCell;
+        public bool DoneDividing { get; set; }
 
-        public Cell(Texture2D loadedTex, int x, int y) : base(loadedTex)
+        public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (texture, graphics, spriteSheetInfo)
         {
+<<<<<<< HEAD
             position = new Vector2(x, y);
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
@@ -57,6 +59,9 @@ namespace cellution
         public Cell(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (graphics, spriteSheetInfo)
         {
             position = Vector2.Zero;
+=======
+            this.position = position;
+>>>>>>> origin/master
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -287,6 +292,11 @@ namespace cellution
             velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
             velocity.Normalize();
             velocity *= 10.0f;//2.0f;
+        }
+
+        public void SetDoneDividing()
+        {
+            DoneDividing = true;
         }
     }
 }

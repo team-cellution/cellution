@@ -30,10 +30,16 @@ namespace cellution
 
         public void SpawnCell()
         {
-            //cells.Add(CreateCell(Vector2.Zero));
+            cells.Add(CreateCell(Vector2.Zero));
             //cells[0].name = "one";
             cells.Add(CreateCell(new Vector2(100, 100)));
             //cells[1].name = "two";
+            cells.Add(CreateCell(new Vector2(200, 200)));
+            cells.Add(CreateCell(new Vector2(500, 500)));
+            cells.Add(CreateCell(new Vector2(250, 200)));
+            cells.Add(CreateCell(new Vector2(550, 500)));
+            cells.Add(CreateCell(new Vector2(200, 100)));
+            cells.Add(CreateCell(new Vector2(900, 500)));
         }
 
         private Cell CreateCell(Vector2 position)
@@ -133,7 +139,7 @@ namespace cellution
             newCell.c = cell.c;
             newCell.g = cell.g;
             newCell.t = cell.t;
-            cells.Add(cell);
+            cells.Add(newCell);
         }
 
         public void KillCell(Cell cell)

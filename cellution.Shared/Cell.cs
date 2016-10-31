@@ -26,6 +26,8 @@ namespace cellution
         public DateTime deathDay;
         public bool kill;
         public Cell targetCell;
+        public double speed;
+        public double attackRange;
         public bool DoneDividing { get; set; }
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
@@ -41,6 +43,8 @@ namespace cellution
             kill = false;
             targetCell = this;
             dna = new DNA();
+            speed = 10.0;
+            attackRange = 200;
         }
 
         public void Update(GameTime gameTime)
@@ -51,7 +55,7 @@ namespace cellution
                 kill = true;
             }
 
-            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < 10)
+            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < speed)
             {
                 sprite.velocity = Vector2.Zero;
                 if (behavior != 6)
@@ -140,8 +144,9 @@ namespace cellution
                         }
                         //Console.WriteLine("Dist " + nTDist);
                         // If it couldn't find any cells in range, reset behavior
-                        if (nTDist < 300 || targetCell.id == id)
+                        if (nTDist > attackRange || targetCell.id == id)
                         {
+                            targetCell = this;
                             behavior = -1;
                         }
                     }
@@ -149,7 +154,7 @@ namespace cellution
                     else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
                     {
                         // If at target, kill them and reset
-                        if (Vector2.Distance(sprite.position, targetCell.sprite.position) < 5)
+                        if (Vector2.Distance(sprite.position, targetCell.sprite.position) < speed)
                         {
                             targetCell.kill = true;
                             a += targetCell.a * 3 / 4;
@@ -261,7 +266,7 @@ namespace cellution
             targetPosition = target;
             sprite.velocity = new Vector2(targetPosition.X - sprite.position.X, targetPosition.Y - sprite.position.Y);
             sprite.velocity.Normalize();
-            sprite.velocity *= 10.0f;//2.0f;
+            sprite.velocity *= (float) speed;//2.0f;
         }
 
         public void SetDoneDividing()

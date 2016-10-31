@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Linq;
 
 namespace cellution
 {
@@ -30,16 +31,11 @@ namespace cellution
 
         public void SpawnCell()
         {
-            cells.Add(CreateCell(Vector2.Zero));
-            //cells[0].name = "one";
-            cells.Add(CreateCell(new Vector2(100, 100)));
-            //cells[1].name = "two";
-            cells.Add(CreateCell(new Vector2(200, 200)));
-            cells.Add(CreateCell(new Vector2(500, 500)));
-            cells.Add(CreateCell(new Vector2(250, 200)));
-            cells.Add(CreateCell(new Vector2(550, 500)));
-            cells.Add(CreateCell(new Vector2(200, 100)));
-            cells.Add(CreateCell(new Vector2(900, 500)));
+            foreach (int i in Enumerable.Range(0, 10))
+            {
+                cells.Add(CreateCell(new Vector2(World.Random.Next(0, 1920), World.Random.Next(0, 1080))));
+            }
+
         }
 
         private Cell CreateCell(Vector2 position)

@@ -33,10 +33,10 @@ namespace cellution
 
         public void SpawnCell()
         {
-            cells.Add(CreateCell(Vector2.Zero));
-            cells[0].name = "one";
+            //cells.Add(CreateCell(Vector2.Zero));
+            //cells[0].name = "one";
             cells.Add(CreateCell(new Vector2(100, 100)));
-            cells[1].name = "two";
+            //cells[1].name = "two";
         }
 
         private Cell CreateCell(Vector2 position)
@@ -54,10 +54,10 @@ namespace cellution
             c = 0;
             g = 0;
             t = 0;
-            Console.WriteLine("\n");
+            //Console.WriteLine("\n");
             foreach (Cell cell in cells)
             {
-                Console.WriteLine(cell.id + " X:" + cell.position.X + " Y:" + cell.position.Y);
+                //Console.WriteLine(cell.id + " X:" + cell.position.X + " Y:" + cell.position.Y);
                 cell.Update(gameTime);
                 if (cell.divide == true)
                 {

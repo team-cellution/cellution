@@ -27,9 +27,9 @@ namespace cellution
         public Cell targetCell;
         public bool DoneDividing { get; set; }
 
-        public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (texture, graphics, spriteSheetInfo)
+        public Cell(Vector2 pos, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (texture, graphics, spriteSheetInfo)
         {
-            this.position = position;
+            this.position = pos;
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -78,8 +78,10 @@ namespace cellution
                 kill = true;
             }
 
-            if (behavior != 7 && Vector2.Distance(position, targetPosition) < 5)
+            Console.WriteLine(id + " Dist2Target:" + Vector2.Distance(position, targetPosition));
+            if (behavior != 7 && Vector2.Distance(position, targetPosition) < 10)
             {
+                Console.WriteLine("Stopping " + id);
                 velocity = Vector2.Zero;
                 if (behavior != 6)
                 {
@@ -88,19 +90,19 @@ namespace cellution
             }
 
             // Quick fix for off screen
-            if (position.X >= 1920 || position.X < 0 || position.Y >= 1080 || position.Y < 0)
+            /*if (position.X >= 1920 || position.X < 0 || position.Y >= 1080 || position.Y < 0)
             {
                 behavior = -1;
                 velocity = new Vector2(0, 0);
                 targetPosition = new Vector2(0, 0);
-            }
+            }*/
 
-                /*if (lastBehavior == -4)
-                {
-                    behavior = 7;
-                }*/
+            /*if (lastBehavior == -4)
+            {
+                behavior = 7;
+            }*/
 
-                if (behavior == -1) // If the Cell is doing nothing.
+            if (behavior == -1) // If the Cell is doing nothing.
             {
                 rand = World.Random.NextDouble();
                 int tempIndex = 0;
@@ -294,20 +296,20 @@ namespace cellution
         public void goTo(Vector2 target)
         {
             // Quick fix for cells going off screen
-            if (targetPosition.X < 1920 && targetPosition.X >= 0 && targetPosition.Y < 1080 && targetPosition.Y >= 0)
-            {
-                Console.WriteLine("Target Pos:" + targetPosition);
-                targetPosition = target;
-                velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
-                velocity.Normalize();
-                velocity *= 10.0f;//2.0f;
-            }
+            //if (targetPosition.X < 1920 && targetPosition.X >= 0 && targetPosition.Y < 1080 && targetPosition.Y >= 0)
+            //{
+            //Console.WriteLine("Target Pos:" + targetPosition);
+            targetPosition = target;
+            velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
+            velocity.Normalize();
+            velocity *= 10.0f;//2.0f;
+            /*
             else
             {
                 behavior = -1;
                 velocity = Vector2.Zero;
                 targetPosition = new Vector2(0, 0);
-            }
+            }*/
         }
 
         public void SetDoneDividing()

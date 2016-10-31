@@ -9,7 +9,7 @@ namespace cellution
     public class ResourceManager
     {
         public List<Resource> resources;
-        private const int totalResources = 10;
+        private const int totalResources = 100;
         public int currentResources = 0;
         public Viewport viewport;
 

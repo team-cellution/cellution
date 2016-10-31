@@ -164,32 +164,35 @@ namespace cellution
             {
                 foreach (Cell cell in world.cellManager.cells)
                 {
-                    if (cell.rectange.Contains(resource.sprite.rectange))
+                    if (!resourcesToRemove.Contains(resource))
                     {
-                        if (resource.resourceType == Resource.ResourceTypes.A)
+                        if (cell.rectange.Contains(resource.sprite.rectange))
                         {
-                            cell.a++;
+                            if (resource.resourceType == Resource.ResourceTypes.A)
+                            {
+                                cell.a++;
+                            }
+                            else if (resource.resourceType == Resource.ResourceTypes.C)
+                            {
+                                cell.c++;
+                            }
+                            else if (resource.resourceType == Resource.ResourceTypes.G)
+                            {
+                                cell.g++;
+                            }
+                            else if (resource.resourceType == Resource.ResourceTypes.T)
+                            {
+                                cell.t++;
+                            }
+                            resourcesToRemove.Add(resource);
                         }
-                        else if (resource.resourceType == Resource.ResourceTypes.C)
-                        {
-                            cell.c++;
-                        }
-                        else if (resource.resourceType == Resource.ResourceTypes.G)
-                        {
-                            cell.g++;
-                        }
-                        else if (resource.resourceType == Resource.ResourceTypes.T)
-                        {
-                            cell.t++;
-                        }
-                        resourcesToRemove.Add(resource);
-                        world.resourceManager.currentResources--;
                     }
                 }
             }
             foreach (Resource resource in resourcesToRemove)
             {
                 world.resourceManager.resources.Remove(resource);
+                world.resourceManager.currentResources--;
             }
             resourcesToRemove.Clear();
 

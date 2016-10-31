@@ -17,6 +17,7 @@ namespace cellution
         public Cell selectedCell;
         List<Cell> cellsToDivide;
         List<Cell> cellsToKill;
+        public int cellCap;
 
         public CellManager(Texture2D cellTexture)
         {
@@ -25,6 +26,7 @@ namespace cellution
             cellsToKill = new List<Cell>();
             this.cellTexture = cellTexture;
             selectedCell = null;
+            cellCap = 15;
         }
 
         public void CreateCell(GraphicsDeviceManager graphics)
@@ -65,7 +67,10 @@ namespace cellution
             // Divide Step
             foreach (Cell cell in cellsToDivide)
             {
-                divideCell(cell);
+                if (cells.Count <= cellCap)
+                {
+                    divideCell(cell);
+                }
             }
             // Kill Step
             foreach (Cell cell in cellsToKill)
@@ -100,7 +105,7 @@ namespace cellution
             cell.c = cell.c / 2;
             cell.g = cell.g / 2;
             cell.t = cell.t / 2;
-            cells.Add(new Cell(cellTexture, (int) cell.position.X, (int) cell.position.Y));
+            cells.Add(new Cell(cellTexture, (int) cell.position.X, (int) cell.position.Y, cell.dna));
             Cell newCell = cells[cells.Count-1];
             newCell.a = cell.a;
             newCell.c = cell.c;

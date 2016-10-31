@@ -16,7 +16,7 @@ namespace cellution
         public int t;
         public string name;
         public int id;
-        public List<Tuple<int, double>> dna = new List<Tuple<int, double>>();
+        public DNA dna;
         private double rand;
         public int behavior; // -1 is ready, -2 is player command, -3 is mid cell action
         public bool divide;
@@ -37,15 +37,21 @@ namespace cellution
             deathDay = DateTime.Now.AddHours(1);
             kill = false;
             targetCell = this;
+            dna = new DNA();
+        }
 
-            foreach (int i in Enumerable.Range(0, 8))
-            {
-                dna.Add(new Tuple<int, double>(i, .125));
-            }
-            /*foreach(Tuple<int, double> p in dna)
-            {
-                Console.Write(p+", ");
-            }*/
+        public Cell(Texture2D loadedTex, int x, int y, DNA parentDNA) : base(loadedTex)
+        {
+            position = new Vector2(x, y);
+            id = World.Random.Next(0, int.MaxValue);
+            behavior = -1;
+            lastBehavior = -4;
+            divide = false;
+            waitUntil = new TimeSpan(0);
+            deathDay = DateTime.Now.AddHours(1);
+            kill = false;
+            targetCell = this;
+            dna = parentDNA;
         }
 
         public Cell(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base (graphics, spriteSheetInfo)
@@ -59,11 +65,7 @@ namespace cellution
             deathDay = DateTime.Now.AddHours(1);
             kill = false;
             targetCell = this;
-
-            foreach (int i in Enumerable.Range(0, 8))
-            {
-                dna.Add(new Tuple<int, double>(i, .125));
-            }
+            dna = new DNA();
         }
 
         public override void Update(GameTime gameTime)
@@ -91,21 +93,25 @@ namespace cellution
             if (behavior == -1) // If the Cell is doing nothing.
             {
                 rand = World.Random.NextDouble();
-                foreach (Tuple<int, double> gene in dna)
+                int tempIndex = 0;
+                foreach (Tuple<int, double> gene in dna.genes)
                 {
                     rand -= gene.Item2;
                     if (rand <= 0)
                     {
                         behavior = gene.Item1;
+                        dna.influenceGene(tempIndex, 1);
+                        dna.print();
                         break;
                     }
+                    tempIndex++;
                 }
             }
 
-            if (lastBehavior != behavior)
+            /*if (lastBehavior != behavior)
             {
                 Console.WriteLine(id + " " + behavior);
-            }
+            }*/
 
             lastBehavior = behavior;
             switch (behavior)
@@ -157,8 +163,9 @@ namespace cellution
                                 }
                             }
                         }
-                        // If it couldn't find any other cells, reset behavior
-                        if (targetCell.id == id)
+                        //Console.WriteLine("Dist " + nTDist);
+                        // If it couldn't find any cells in range, reset behavior
+                        if (nTDist < 300 || targetCell.id == id)
                         {
                             behavior = -1;
                         }
@@ -170,10 +177,10 @@ namespace cellution
                         if (Vector2.Distance(position, targetCell.position) < 5)
                         {
                             targetCell.kill = true;
-                            a += targetCell.a;
-                            c += targetCell.c;
-                            g += targetCell.g;
-                            t += targetCell.t;
+                            a += targetCell.a * 3 / 4;
+                            c += targetCell.c * 3 / 4;
+                            g += targetCell.g * 3 / 4;
+                            t += targetCell.t * 3 / 4;
                             targetCell = this;
                             behavior = -1;
                         }
@@ -279,7 +286,7 @@ namespace cellution
             targetPosition = target;
             velocity = new Vector2(targetPosition.X - position.X, targetPosition.Y - position.Y);
             velocity.Normalize();
-            velocity *= 2.0f;
+            velocity *= 10.0f;//2.0f;
         }
     }
 }

@@ -42,6 +42,33 @@ namespace cellution
             cell.sprite.animations["divide"] = cell.sprite.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 250, false);
             cell.sprite.animations.CurrentAnimationName = null;
             cell.sprite.animations.SetFrameAction("divide", 8, cell.SetDoneDividing);
+            int cellColor = World.Random.Next(5);
+            if (cellColor == 0)
+            {
+                // red
+                cell.sprite.color = new Color(219, 107, 94);
+            }
+            else if (cellColor == 1)
+            {
+                // yellow
+                cell.sprite.color = new Color(224, 227, 87);
+            }
+            else if (cellColor == 2)
+            {
+                // green
+                cell.sprite.color = new Color(109, 221, 101);
+            }
+            else if (cellColor == 3)
+            {
+                // blue
+                cell.sprite.color = new Color(75, 209, 239);
+            }
+            else if (cellColor == 4)
+            {
+                // purple
+                cell.sprite.color = new Color(176, 93, 232);
+            }
+            cell.sprite.alpha = 0.8f;
             return cell;
         }
 

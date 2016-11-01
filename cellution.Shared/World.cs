@@ -24,6 +24,8 @@ namespace cellution
         public CellManager cellManager;
         public ResourceManager resourceManager;
 
+        public Texture2D oneByOne;
+
         public World(GraphicsDeviceManager graphics)
         {
             this.graphics = graphics;

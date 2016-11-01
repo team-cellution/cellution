@@ -11,7 +11,7 @@ namespace cellution
         public Vector2 position;
         public Vector2 velocity;
         public bool visible;
-        public Rectangle rectange;
+        public Rectangle rectangle;
         public Color color;
         public Vector2 origin;
         public float alpha;
@@ -28,7 +28,7 @@ namespace cellution
             position = Vector2.Zero;
             velocity = Vector2.Zero;
             visible = true;
-            rectange = new Rectangle(0, 0, 0, 0);
+            rectangle = new Rectangle(0, 0, 0, 0);
             color = Color.White;
             origin = new Vector2(0, 0);
             alpha = 1.0f;

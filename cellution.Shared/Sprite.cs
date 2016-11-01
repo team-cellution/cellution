@@ -19,7 +19,7 @@ namespace cellution
         {
             tex = loadedTex;
             drawRect = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), 0, 0);
-            rectange = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), tex.Width, tex.Height);
+            rectangle = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), tex.Width, tex.Height);
             origin = new Vector2(tex.Width / 2, tex.Height / 2);
             isAnimated = false;
         }
@@ -39,7 +39,7 @@ namespace cellution
             {
                 animations.currentSpriteSheet = animations.spriteSheets.First().Value;
             }
-            rectange = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), tex.Width, tex.Height);
+            rectangle = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), tex.Width, tex.Height);
             origin = new Vector2(tex.Width / 2, tex.Height / 2);
         }
 
@@ -52,11 +52,11 @@ namespace cellution
             position += velocity;
             drawRect.X = (int)Math.Round(position.X);
             drawRect.Y = (int)Math.Round(position.Y);
-            rectange = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), tex.Width, tex.Height);
+            rectangle = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), tex.Width, tex.Height);
             spriteTransform = Matrix.CreateTranslation(new Vector3(-origin, 0.0f)) *
                 Matrix.CreateScale(scale) * Matrix.CreateRotationZ(rotation) *
                 Matrix.CreateTranslation(new Vector3(position, 0.0f));
-            rectange = CalculateBoundingRectangle(new Rectangle(0, 0, tex.Width, tex.Height), spriteTransform);
+            rectangle = CalculateBoundingRectangle(new Rectangle(0, 0, tex.Width, tex.Height), spriteTransform);
         }
 
         private void UpdateAnimation(GameTime gameTime)

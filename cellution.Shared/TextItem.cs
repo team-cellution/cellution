@@ -52,7 +52,7 @@ namespace cellution
 
         private void UpdateRectangle()
         {
-            rectange = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), (int)Math.Round(TextSize.X), (int)Math.Round(TextSize.Y));
+            rectangle = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), (int)Math.Round(TextSize.X), (int)Math.Round(TextSize.Y));
         }
     }
 }

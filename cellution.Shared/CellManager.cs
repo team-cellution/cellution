@@ -31,7 +31,7 @@ namespace cellution
 
         public void SpawnCell()
         {
-            foreach (int i in Enumerable.Range(0, 10))
+            foreach (int i in Enumerable.Range(0, 12))
             {
                 cells.Add(CreateCell(new Vector2(World.Random.Next(0, 1920), World.Random.Next(0, 1080))));
             }
@@ -45,37 +45,24 @@ namespace cellution
             cell.sprite.animations.CurrentAnimationName = null;
             cell.sprite.animations.SetFrameAction("divide", 8, cell.SetDoneDividing);
             int cellColor = World.Random.Next(5);
-            if (cellColor == 0)
-            {
-                // red
-                cell.sprite.color = new Color(219, 107, 94);
-            }
-            else if (cellColor == 1)
-            {
-                // yellow
-                cell.sprite.color = new Color(224, 227, 87);
-            }
-            else if (cellColor == 2)
-            {
-                // green
-                cell.sprite.color = new Color(109, 221, 101);
-            }
-            else if (cellColor == 3)
-            {
-                // blue
-                cell.sprite.color = new Color(75, 209, 239);
-            }
-            else if (cellColor == 4)
-            {
-                // purple
-                cell.sprite.color = new Color(176, 93, 232);
-            }
-            cell.sprite.alpha = 0.8f;
+            cell.setColor(cellColor);
             return cell;
         }
 
         public void Update(GameTime gameTime)
         {
+            // Keeps the number of alive cells constant
+            /*if (cells.Count < cellCap)
+            {
+                cells.Add(CreateCell(new Vector2(World.Random.Next(0, 1920), World.Random.Next(0, 1080))));
+            }*/
+
+            // 1 in 500 updates a cell will change color
+            if (World.Random.Next(500) == 0)
+            {
+                cells[World.Random.Next(cells.Count)].setColor(World.Random.Next(5));
+            }
+
             a = 0;
             c = 0;
             g = 0;
@@ -162,6 +149,16 @@ namespace cellution
             newCell.c = cell.c;
             newCell.g = cell.g;
             newCell.t = cell.t;
+            // To be implemented in another fashion, for now, 1 in 5 divides changes color
+            if (World.Random.Next(5) == 0)
+            {
+                newCell.setColor(World.Random.Next(5));
+            }
+            else
+            {
+                newCell.sprite.color = cell.sprite.color;
+            }
+
             cells.Add(newCell);
         }
 

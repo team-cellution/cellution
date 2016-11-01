@@ -75,6 +75,11 @@ namespace cellution
             World.textureManager.Load("Cell-Division");
             scoreFont = Content.Load<SpriteFont>("ScoreFont");
 
+            // create 1x1 texture for line drawing
+            world.oneByOne = new Texture2D(GraphicsDevice, 1, 1);
+            world.oneByOne.SetData<Color>(
+                new Color[] { Color.White });// fill the texture with white
+
             background = new Background(World.textureManager["BG-Layer"], graphics.GraphicsDevice.Viewport);
             world.cellManager = new CellManager(World.textureManager["fancy_cell_greyscale"], graphics);
             world.cellManager.SpawnCell();
@@ -123,7 +128,7 @@ namespace cellution
                 foreach (Cell cell in world.cellManager.cells)
                 {
                     Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
-                    if (cell.sprite.rectange.Contains(transformedMouseState.ToPoint()))
+                    if (cell.sprite.rectangle.Contains(transformedMouseState.ToPoint()))
                     {
                         world.cellManager.selectedCell = cell;
                     }
@@ -166,7 +171,7 @@ namespace cellution
                 {
                     if (!resourcesToRemove.Contains(resource))
                     {
-                        if (cell.sprite.rectange.Contains(resource.sprite.rectange))
+                        if (cell.sprite.rectangle.Contains(resource.sprite.rectangle))
                         {
                             if (resource.resourceType == Resource.ResourceTypes.A)
                             {

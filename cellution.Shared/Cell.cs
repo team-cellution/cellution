@@ -26,8 +26,9 @@ namespace cellution
         public DateTime deathDay;
         public bool kill;
         public Cell targetCell;
-        public double speed;
+        public float speed;
         public double attackRange;
+        public double range;
         public bool DoneDividing { get; set; }
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
@@ -43,8 +44,9 @@ namespace cellution
             kill = false;
             targetCell = this;
             dna = new DNA();
-            speed = 10.0;
+            speed = 4.0f;
             attackRange = 200;
+            range = sprite.rectangle.Width/2.0;
         }
 
         public void Update(GameTime gameTime)
@@ -55,7 +57,7 @@ namespace cellution
                 kill = true;
             }
 
-            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < speed)
+            if (behavior != 7 && sprite.rectangle.Contains(targetPosition))
             {
                 sprite.velocity = Vector2.Zero;
                 if (behavior != 6)
@@ -132,7 +134,7 @@ namespace cellution
                         double nTDist = Double.MaxValue;
                         foreach (Cell cell in Game1.world.cellManager.cells)
                         {
-                            if (cell.id != id)
+                            if (cell.sprite.color != sprite.color)//cell.id != id)
                             {
                                 double temp = Vector2.Distance(cell.sprite.position, sprite.position);
                                 if (temp < nTDist)
@@ -154,7 +156,7 @@ namespace cellution
                     else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
                     {
                         // If at target, kill them and reset
-                        if (Vector2.Distance(sprite.position, targetCell.sprite.position) < speed)
+                        if (sprite.rectangle.Contains(targetCell.sprite.position))
                         {
                             targetCell.kill = true;
                             a += targetCell.a * 3 / 4;
@@ -201,34 +203,18 @@ namespace cellution
             Resource.ResourceTypes rType;
             if (resourceType == 0)
             {
-                /*if (a >= 15)
-                {
-                    return;
-                }*/
                 rType = Resource.ResourceTypes.A;
             }
             else if (resourceType == 1)
             {
-                /*if (c >= 15)
-                {
-                    return;
-                }*/
                 rType = Resource.ResourceTypes.C;
             }
             else if (resourceType == 2)
             {
-                /*if (g >= 15)
-                {
-                    return;
-                }*/
                 rType = Resource.ResourceTypes.G;
             }
             else if (resourceType == 3)
             {
-                /*if (t >= 15)
-                {
-                    return;
-                }*/
                 rType = Resource.ResourceTypes.T;
             }
             else
@@ -266,7 +252,7 @@ namespace cellution
             targetPosition = target;
             sprite.velocity = new Vector2(targetPosition.X - sprite.position.X, targetPosition.Y - sprite.position.Y);
             sprite.velocity.Normalize();
-            sprite.velocity *= (float) speed;//2.0f;
+            sprite.velocity *= speed;
         }
 
         public void SetDoneDividing()
@@ -277,6 +263,50 @@ namespace cellution
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch);
+            DrawLine(spriteBatch, sprite.position, targetPosition);
+        }
+
+        void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)
+        {
+            Vector2 edge = end - start;
+            // calculate angle to rotate line
+            float angle = (float) Math.Atan2(edge.Y, edge.X);
+
+            sb.Draw(Game1.world.oneByOne, new Rectangle(// rectangle defines shape of line and position of start of line
+                    (int) start.X,
+                    (int) start.Y,
+                    (int) edge.Length(), //sb will strech the texture to fill this rectangle
+                    1), //width of line, change this to make thicker line
+                null, Color.Black, //colour of line
+                angle,     //angle of line (calulated above)
+                new Vector2(0, 0), // point in line about which to rotate
+                SpriteEffects.None, 0);
+
+        }
+
+        public void setColor(int index)
+        {
+            if (index == 0)
+            {// red
+                sprite.color = new Color(219, 107, 94);
+            }
+            else if (index == 1)
+            {// yellow
+                sprite.color = new Color(224, 227, 87);
+            }
+            else if (index == 2)
+            {// green
+                sprite.color = new Color(109, 221, 101);
+            }
+            else if (index == 3)
+            {// blue
+                sprite.color = new Color(75, 209, 239);
+            }
+            else if (index == 4)
+            {// purple
+                sprite.color = new Color(176, 93, 232);
+            }
+            sprite.alpha = 0.8f;
         }
     }
 }

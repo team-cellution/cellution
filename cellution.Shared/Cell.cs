@@ -35,6 +35,7 @@ namespace cellution
         {
             sprite = new Sprite(texture, graphics, spriteSheetInfo);
             sprite.position = position;
+            sprite.origin = new Vector2(texture.Width/2, texture.Height/2);
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -57,7 +58,7 @@ namespace cellution
                 kill = true;
             }
 
-            if (behavior != 7 && sprite.rectangle.Contains(targetPosition))
+            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < sprite.tex.Width/2 - 3)
             {
                 sprite.velocity = Vector2.Zero;
                 if (behavior != 6)
@@ -89,10 +90,10 @@ namespace cellution
                 }
             }
 
-            if (lastBehavior != behavior)
+            /*if (lastBehavior != behavior)
             {
                 Console.WriteLine(id + " " + behavior);
-            }
+            }*/
 
             lastBehavior = behavior;
             switch (behavior)

@@ -26,9 +26,9 @@ namespace cellution
         public DateTime deathDay;
         public bool kill;
         public Cell targetCell;
+        public TimeSpan chaseUntil;
         public float speed;
         public double attackRange;
-        public double range;
         public bool DoneDividing { get; set; }
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
@@ -41,13 +41,13 @@ namespace cellution
             lastBehavior = -4;
             divide = false;
             waitUntil = new TimeSpan(0);
-            deathDay = DateTime.Now.AddHours(1);
+            deathDay = DateTime.Now.AddMinutes(5);
             kill = false;
             targetCell = this;
+            chaseUntil = new TimeSpan(0);
             dna = new DNA();
             speed = 4.0f;
             attackRange = 200;
-            range = sprite.rectangle.Width/2.0;
         }
 
         public void Update(GameTime gameTime)
@@ -72,7 +72,8 @@ namespace cellution
                 behavior = 7;
             }*/
 
-            if (behavior == -1) // If the Cell is doing nothing.
+            // Generate a random behavior choice
+            if (behavior == -1 && this != Game1.world.cellManager.selectedCell) // If the Cell is doing nothing.
             {
                 rand = World.Random.NextDouble();
                 int tempIndex = 0;
@@ -128,55 +129,8 @@ namespace cellution
                     behavior = -3;
                     break;
                 // Attack
-                // ADD Chase length
                 case 6:
-                    if (targetCell.id == id)
-                    {
-                        double nTDist = Double.MaxValue;
-                        foreach (Cell cell in Game1.world.cellManager.cells)
-                        {
-                            if (cell.sprite.color != sprite.color)//cell.id != id)
-                            {
-                                double temp = Vector2.Distance(cell.sprite.position, sprite.position);
-                                if (temp < nTDist)
-                                {
-                                    nTDist = temp;
-                                    targetCell = cell;
-                                }
-                            }
-                        }
-                        //Console.WriteLine("Dist " + nTDist);
-                        // If it couldn't find any cells in range, reset behavior
-                        if (nTDist > attackRange || targetCell.id == id)
-                        {
-                            targetCell = this;
-                            behavior = -1;
-                        }
-                    }
-                    // If target lives
-                    else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
-                    {
-                        // If at target, kill them and reset
-                        if (sprite.rectangle.Contains(targetCell.sprite.position))
-                        {
-                            targetCell.kill = true;
-                            a += targetCell.a * 3 / 4;
-                            c += targetCell.c * 3 / 4;
-                            g += targetCell.g * 3 / 4;
-                            t += targetCell.t * 3 / 4;
-                            targetCell = this;
-                            behavior = -1;
-                        }
-                        else
-                        {
-                            // Give chase
-                            goTo(targetCell.sprite.position);
-                        }
-                    }
-                    else // If target died before it could be killed
-                    {
-                        behavior = -1;
-                    }
+                    attack(gameTime);
                     break;
                 // Wait
                 case 7:
@@ -243,6 +197,73 @@ namespace cellution
                 behavior = -3;
             }
             else // If there are none of these resources
+            {
+                behavior = -1;
+            }
+        }
+
+        public void attack(GameTime gameTime)
+        {
+            if (targetCell.id == id)
+            {
+                double nTDist = Double.MaxValue;
+                foreach (Cell cell in Game1.world.cellManager.cells)
+                {
+                    if (cell.sprite.color != sprite.color)//cell.id != id)
+                    {
+                        double temp = Vector2.Distance(cell.sprite.position, sprite.position);
+                        if (temp < nTDist)
+                        {
+                            nTDist = temp;
+                            targetCell = cell;
+                        }
+                    }
+                }
+                //Console.WriteLine("Dist " + nTDist);
+                // If it couldn't find any cells in range, reset behavior
+                if (nTDist > attackRange || targetCell.id == id)
+                {
+                    targetCell = this;
+                    behavior = -1;
+                }
+            }
+            // If target lives
+            else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
+            {
+                // If at target, kill them and reset
+                if (sprite.rectangle.Contains(targetCell.sprite.position))
+                {
+                    targetCell.kill = true;
+                    a += targetCell.a * 3 / 4;
+                    c += targetCell.c * 3 / 4;
+                    g += targetCell.g * 3 / 4;
+                    t += targetCell.t * 3 / 4;
+                    targetCell = this;
+                    behavior = -1;
+                }
+                else
+                {
+                    // Cells only give chase for 5 seconds before giving up
+                    if (chaseUntil.Ticks == 0)
+                    {
+                        chaseUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, 0, 5));
+                        // Give chase
+                        goTo(targetCell.sprite.position);
+                    }
+                    else if (gameTime.TotalGameTime.CompareTo(chaseUntil) == 1)
+                    {
+                        chaseUntil = new TimeSpan(0);
+                        targetCell = this;
+                        behavior = -1;
+                    }
+                    else
+                    {
+                        // Give chase
+                        goTo(targetCell.sprite.position);
+                    }
+                }
+            }
+            else // If target died before it could be killed
             {
                 behavior = -1;
             }

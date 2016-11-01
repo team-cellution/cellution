@@ -128,15 +128,15 @@ namespace cellution
                 foreach (Cell cell in world.cellManager.cells)
                 {
                     Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
-                    if (cell.sprite.rectangle.Contains(transformedMouseState.ToPoint()))
+
+                    if (cell.sprite.rectangle.Contains(transformedMouseState))
                     {
                         world.cellManager.selectedCell = cell;
                     }
                 }
             }
 
-            if (mouseState.RightButton == ButtonState.Pressed &&
-                previousMouseState.RightButton == ButtonState.Released)
+            if (mouseState.RightButton == ButtonState.Pressed)
             {
                 foreach (Cell cell in world.cellManager.cells)
                 {

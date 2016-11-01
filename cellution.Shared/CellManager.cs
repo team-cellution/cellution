@@ -19,6 +19,8 @@ namespace cellution
         public Cell selectedCell;
         
         public int cellCap;
+        public int numCellsAtStart;
+        public bool startWithRandomEpigenes;
 
         public CellManager(Texture2D cellTexture, GraphicsDeviceManager graphics)
         {
@@ -27,13 +29,26 @@ namespace cellution
             cells = new List<Cell>();
             selectedCell = null;
             cellCap = 15;
-        }
+            numCellsAtStart = 12;
+            startWithRandomEpigenes = true;
+    }
 
         public void SpawnCell()
         {
-            foreach (int i in Enumerable.Range(0, 12))
+            foreach (int i in Enumerable.Range(0, numCellsAtStart))
             {
-                cells.Add(CreateCell(new Vector2(World.Random.Next(0, 1920), World.Random.Next(0, 1080))));
+                cells.Add(CreateCell(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height))));
+                // Random Epigenetics
+                if (startWithRandomEpigenes)
+                {
+                    int index = 0;
+                    foreach (Tuple<int, double> gene in cells.Last().dna.genes)
+                    {
+                        cells.Last().dna.replaceGene(index, gene.Item1, World.Random.Next(100));
+                        index++;
+                    }
+                    cells.Last().dna.recalcEpigenes();
+                }
             }
 
         }

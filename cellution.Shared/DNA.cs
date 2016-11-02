@@ -109,5 +109,16 @@ namespace cellution
             }
             genes = tempList;
         }
+
+        public void Randomize()
+        {
+            int index = 0;
+            foreach (Tuple<int, double> gene in genes)
+            {
+                replaceGene(index, gene.Item1, World.Random.Next(100));
+                index++;
+            }
+            recalcEpigenes();
+        }
     }
 }

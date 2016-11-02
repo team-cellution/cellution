@@ -21,6 +21,7 @@ namespace cellution
         public int cellCap;
         public int numCellsAtStart;
         public bool startWithRandomEpigenes;
+        public Color playerColor;
 
         public CellManager(Texture2D cellTexture, GraphicsDeviceManager graphics)
         {
@@ -28,54 +29,74 @@ namespace cellution
             this.graphics = graphics;
             cells = new List<Cell>();
             selectedCell = null;
-            cellCap = 15;
-            numCellsAtStart = 12;
+            cellCap = 20;
+            numCellsAtStart = 10;
             startWithRandomEpigenes = true;
-    }
+            playerColor = new Color(75, 209, 239); // Blue
+        }
 
         public void SpawnCell()
         {
             foreach (int i in Enumerable.Range(0, numCellsAtStart))
             {
-                cells.Add(CreateCell(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height))));
+                if (cells.Count == 0)
+                {
+                    cells.Add(CreatePlayerCell(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height))));
+                }
+                else
+                {
+                    cells.Add(CreateCell(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height))));
+                }
                 // Random Epigenetics
                 if (startWithRandomEpigenes)
                 {
-                    int index = 0;
-                    foreach (Tuple<int, double> gene in cells.Last().dna.genes)
-                    {
-                        cells.Last().dna.replaceGene(index, gene.Item1, World.Random.Next(100));
-                        index++;
-                    }
-                    cells.Last().dna.recalcEpigenes();
+                    cells.Last().dna.Randomize();
                 }
             }
 
         }
 
-        private Cell CreateCell(Vector2 position)
+        public Cell CreateCell(Vector2 position)
         {
             Cell cell = new Cell(position, cellTexture, graphics, new SpriteSheetInfo(120, 120));
             cell.sprite.animations["divide"] = cell.sprite.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 250, false);
             cell.sprite.animations.CurrentAnimationName = null;
             cell.sprite.animations.SetFrameAction("divide", 8, cell.SetDoneDividing);
-            int cellColor = World.Random.Next(5);
-            cell.setColor(cellColor);
+            int cellColor;
+            cellColor = World.Random.Next(4); // Excludes player color blue
+            cell.SetColor(cellColor);
+            return cell;
+        }
+
+        public Cell CreatePlayerCell(Vector2 position)
+        {
+            Cell cell = new Cell(position, cellTexture, graphics, new SpriteSheetInfo(120, 120));
+            cell.sprite.animations["divide"] = cell.sprite.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 250, false);
+            cell.sprite.animations.CurrentAnimationName = null;
+            cell.sprite.animations.SetFrameAction("divide", 8, cell.SetDoneDividing);
+            int cellColor = 4;
+            selectedCell = cell;
+            cell.SetColor(cellColor);
             return cell;
         }
 
         public void Update(GameTime gameTime)
         {
             // Keeps the number of alive cells constant
-            /*if (cells.Count < cellCap)
+            if (cells.Count < cellCap && World.Random.Next(100) == 0)
             {
                 cells.Add(CreateCell(new Vector2(World.Random.Next(0, 1920), World.Random.Next(0, 1080))));
-            }*/
+                cells.Last().dna.Randomize();
+            }
 
-            // 1 in 500 updates a cell will change color
+            // 1 in 500 updates a non player cell will change color
             if (World.Random.Next(500) == 0)
             {
-                cells[World.Random.Next(cells.Count)].setColor(World.Random.Next(5));
+                Cell turncoat = cells[World.Random.Next(cells.Count)];
+                if (turncoat.sprite.color != playerColor)
+                {
+                    turncoat.SetColor(World.Random.Next(4));
+                }
             }
 
             a = 0;
@@ -113,14 +134,17 @@ namespace cellution
             // Divide Step
             foreach (Cell cell in cellsToDivide)
             {
-                if (cells.Count <= cellCap)
+                if (cells.Count <= cellCap || cell == selectedCell)
                 {
                     StartCellDivision(cell);
                 }
             }
             foreach (Cell cell in cellsToCreate)
             {
-                DivideCell(cell);
+                if (cells.Count <= cellCap || cell == selectedCell)
+                {
+                    DivideCell(cell);
+                }
             }
             // Kill Step
             foreach (Cell cell in cellsToKill)
@@ -164,10 +188,10 @@ namespace cellution
             newCell.c = cell.c;
             newCell.g = cell.g;
             newCell.t = cell.t;
-            // To be implemented in another fashion, for now, 1 in 5 divides changes color
-            if (World.Random.Next(5) == 0)
+            // To be implemented in another fashion, for now, 1 in 5 non player divides changes color
+            if (cell.sprite.color != playerColor && World.Random.Next(5) == 0)
             {
-                newCell.setColor(World.Random.Next(5));
+                newCell.SetColor(World.Random.Next(4)); // Excludes player Color (Blue)
             }
             else
             {

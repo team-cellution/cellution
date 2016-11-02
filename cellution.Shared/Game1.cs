@@ -124,15 +124,24 @@ namespace cellution
             if (mouseState.LeftButton == ButtonState.Pressed &&
                 previousMouseState.LeftButton == ButtonState.Released)
             {
+                bool playerHasACell = false;
                 world.cellManager.selectedCell = null;
+                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
+
                 foreach (Cell cell in world.cellManager.cells)
                 {
-                    Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
-
-                    if (cell.sprite.rectangle.Contains(transformedMouseState))
+                    if (cell.sprite.color == world.cellManager.playerColor)
                     {
-                        world.cellManager.selectedCell = cell;
+                        if (cell.sprite.rectangle.Contains(transformedMouseState))
+                        {
+                            world.cellManager.selectedCell = cell;
+                        }
+                        playerHasACell = true;
                     }
+                }
+                if (!playerHasACell)
+                {
+                    world.cellManager.cells.Add(world.cellManager.CreatePlayerCell(transformedMouseState));
                 }
             }
 
@@ -143,7 +152,7 @@ namespace cellution
                     Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
                     if (cell == world.cellManager.selectedCell)
                     {
-                        cell.goTo(new Vector2(transformedMouseState.X, transformedMouseState.Y));
+                        cell.GoTo(new Vector2(transformedMouseState.X, transformedMouseState.Y));
                         cell.behavior = -2;
                     }
                 }
@@ -160,6 +169,34 @@ namespace cellution
                 {
                     world.rooms.CurrentName = "game";
                 }
+            }
+
+            // Press 'D' to try to divide your selected cell
+            if (world.cellManager.selectedCell != null  && keyboardState.IsKeyDown(Keys.D) &&
+                previousKeyboardState.IsKeyUp(Keys.D))
+            {
+                Cell selectedCell = world.cellManager.selectedCell;
+                if (selectedCell.a >= 10 && selectedCell.c >= 10 && selectedCell.g >= 10 && selectedCell.t >= 10)
+                {
+                    selectedCell.divide = true;
+                }
+            }
+
+            // Press 'A' to try to have the selected cell attack the nearest enemy cell
+            if (world.cellManager.selectedCell != null && keyboardState.IsKeyDown(Keys.A) &&
+                previousKeyboardState.IsKeyUp(Keys.A))
+            {
+                Cell selectedCell = world.cellManager.selectedCell;
+                selectedCell.behavior = 6;
+            }
+
+            // Press 'W' to try to have the selected cell wander
+            if (world.cellManager.selectedCell != null && keyboardState.IsKeyDown(Keys.W) &&
+                previousKeyboardState.IsKeyUp(Keys.W))
+            {
+                Cell selectedCell = world.cellManager.selectedCell;
+                selectedCell.Wander();
+                selectedCell.behavior = -3;
             }
 
             world.Update(gameTime);

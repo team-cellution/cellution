@@ -23,12 +23,12 @@ namespace cellution
         public bool divide;
         public int lastBehavior;
         public TimeSpan waitUntil;
-        public DateTime deathDay;
+        public DateTime dEathDay;
         public bool kill;
         public Cell targetCell;
         public TimeSpan chaseUntil;
         public float speed;
-        public double attackRange;
+        public double AttackRange;
         public bool DoneDividing { get; set; }
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
@@ -46,50 +46,21 @@ namespace cellution
             targetCell = this;
             chaseUntil = new TimeSpan(0);
             dna = new DNA();
-            speed = 4.0f;
-            attackRange = 200;
+            speed = 2.0f;
+            AttackRange = 200;
         }
 
         public void Update(GameTime gameTime)
         {
-            if (DateTime.Now.CompareTo(deathDay) == 1)
-            {
-                Console.WriteLine("Marked for death " + id);
-                kill = true;
-            }
-
-            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < sprite.tex.Width/2 - 3)
-            {
-                sprite.velocity = Vector2.Zero;
-                if (behavior != 6)
-                {
-                    behavior = -1;
-                }
-            }
+            KillCellIfTooOld();
+            StopCellIfReady();
 
             /*if (lastBehavior == -4)
             {
                 behavior = 7;
             }*/
 
-            // Generate a random behavior choice
-            if (behavior == -1 && this != Game1.world.cellManager.selectedCell) // If the Cell is doing nothing.
-            {
-                rand = World.Random.NextDouble();
-                int tempIndex = 0;
-                foreach (Tuple<int, double> gene in dna.genes)
-                {
-                    rand -= gene.Item2;
-                    if (rand <= 0)
-                    {
-                        behavior = gene.Item1;
-                        dna.influenceGene(tempIndex, 1);
-                        dna.print();
-                        break;
-                    }
-                    tempIndex++;
-                }
-            }
+            TryRegenerateBehavior();
 
             /*if (lastBehavior != behavior)
             {
@@ -101,19 +72,19 @@ namespace cellution
             {
                 // Eat A
                 case 0:
-                    eat(0);
+                    Eat(0);
                     break;
                 // Eat C
                 case 1:
-                    eat(1);
+                    Eat(1);
                     break;
                 // Eat G
                 case 2:
-                    eat(2);
+                    Eat(2);
                     break;
                 // Eat T
                 case 3:
-                    eat(3);
+                    Eat(3);
                     break;
                 // Divide
                 case 4:
@@ -125,27 +96,16 @@ namespace cellution
                     break;
                 // Wander
                 case 5:
-                    goTo(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height)));//randomVector);
+                    Wander();
                     behavior = -3;
                     break;
                 // Attack
                 case 6:
-                    attack(gameTime);
+                    Attack(gameTime);
                     break;
                 // Wait
                 case 7:
-                    if(waitUntil.Ticks == 0)
-                    {
-                        waitUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, 1));
-                        //Console.WriteLine("gameTime: " + gameTime.TotalGameTime + " waitUntil: " + waitUntil);
-                        sprite.velocity = Vector2.Zero;
-                    }
-                    else if (gameTime.TotalGameTime.CompareTo(waitUntil) == 1)
-                    {
-                        //Console.Write("Stop Waiting: " + gameTime.TotalGameTime);
-                        waitUntil = new TimeSpan(0);
-                        behavior = -1;
-                    }
+                    wait(gameTime);
                     break;
                 // Mid Action, Do Nothing
                 default:
@@ -153,7 +113,7 @@ namespace cellution
             }
             sprite.Update(gameTime);
         }
-        private void eat(int resourceType)
+        private void Eat(int resourceType)
         {
             Resource.ResourceTypes rType;
             if (resourceType == 0)
@@ -193,7 +153,7 @@ namespace cellution
             }
             if (newTarget != sprite.position)
             {
-                goTo(newTarget);
+                GoTo(newTarget);
                 behavior = -3;
             }
             else // If there are none of these resources
@@ -202,7 +162,7 @@ namespace cellution
             }
         }
 
-        public void attack(GameTime gameTime)
+        public void Attack(GameTime gameTime)
         {
             if (targetCell.id == id)
             {
@@ -221,7 +181,7 @@ namespace cellution
                 }
                 //Console.WriteLine("Dist " + nTDist);
                 // If it couldn't find any cells in range, reset behavior
-                if (nTDist > attackRange || targetCell.id == id)
+                if (nTDist > AttackRange || targetCell.id == id)
                 {
                     targetCell = this;
                     behavior = -1;
@@ -248,7 +208,7 @@ namespace cellution
                     {
                         chaseUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, 0, 5));
                         // Give chase
-                        goTo(targetCell.sprite.position);
+                        GoTo(targetCell.sprite.position);
                     }
                     else if (gameTime.TotalGameTime.CompareTo(chaseUntil) == 1)
                     {
@@ -259,7 +219,7 @@ namespace cellution
                     else
                     {
                         // Give chase
-                        goTo(targetCell.sprite.position);
+                        GoTo(targetCell.sprite.position);
                     }
                 }
             }
@@ -269,7 +229,78 @@ namespace cellution
             }
         }
 
-        public void goTo(Vector2 target)
+        public void wait(GameTime gameTime)
+        {
+            if (waitUntil.Ticks == 0)
+            {
+                waitUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, 1));
+                //Console.WriteLine("gameTime: " + gameTime.TotalGameTime + " waitUntil: " + waitUntil);
+                sprite.velocity = Vector2.Zero;
+            }
+            else if (gameTime.TotalGameTime.CompareTo(waitUntil) == 1)
+            {
+                //Console.Write("Stop Waiting: " + gameTime.TotalGameTime);
+                waitUntil = new TimeSpan(0);
+                behavior = -1;
+            }
+        }
+
+        public void Wander()
+        {
+            GoTo(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height)));
+        }
+
+        public void KillCellIfTooOld()
+        {
+            // Cell dies of old age
+            if (DateTime.Now.CompareTo(deathDay) == 1)
+            {
+                Console.WriteLine("Marked for dEath " + id);
+                kill = true;
+            }
+        }
+
+        public void StopCellIfReady()
+        {
+            // If at target and not waiting
+            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < sprite.tex.Width / 2 - 3)
+            {
+                // Stop
+                sprite.velocity = Vector2.Zero;
+                // If not Attacking, reset behavior
+                if (behavior != 6)
+                {
+                    behavior = -1;
+                }
+            }
+        }
+
+        public void TryRegenerateBehavior()
+        {
+            // Generate a random behavior choice if behavior is reset and the cell is not selected
+            if (behavior == -1 && this != Game1.world.cellManager.selectedCell)
+            {
+                rand = World.Random.NextDouble();
+                int tempIndex = 0;
+                foreach (Tuple<int, double> gene in dna.genes)
+                {
+                    rand -= gene.Item2;
+                    if (rand <= 0)
+                    {
+                        behavior = gene.Item1;
+                        dna.influenceGene(tempIndex, 1);
+                        if (sprite.color == Game1.world.cellManager.playerColor)
+                        {
+                            dna.print();
+                        }
+                        break;
+                    }
+                    tempIndex++;
+                }
+            }
+        }
+
+        public void GoTo(Vector2 target)
         {
             targetPosition = target;
             sprite.velocity = new Vector2(targetPosition.X - sprite.position.X, targetPosition.Y - sprite.position.Y);
@@ -285,7 +316,10 @@ namespace cellution
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch);
-            DrawLine(spriteBatch, sprite.position, targetPosition);
+            if (this == Game1.world.cellManager.selectedCell)
+            {
+                DrawLine(spriteBatch, sprite.position, targetPosition);
+            }
         }
 
         void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)
@@ -306,7 +340,7 @@ namespace cellution
 
         }
 
-        public void setColor(int index)
+        public void SetColor(int index)
         {
             if (index == 0)
             {// red
@@ -321,12 +355,12 @@ namespace cellution
                 sprite.color = new Color(109, 221, 101);
             }
             else if (index == 3)
-            {// blue
-                sprite.color = new Color(75, 209, 239);
-            }
-            else if (index == 4)
             {// purple
                 sprite.color = new Color(176, 93, 232);
+            }
+            else if (index == 4)
+            {// blue
+                sprite.color = new Color(75, 209, 239);
             }
             sprite.alpha = 0.8f;
         }

@@ -29,7 +29,7 @@ namespace cellution
             this.graphics = graphics;
             cells = new List<Cell>();
             selectedCell = null;
-            cellCap = 20;
+            cellCap = 30;
             numCellsAtStart = 10;
             startWithRandomEpigenes = true;
             playerColor = new Color(75, 209, 239); // Blue

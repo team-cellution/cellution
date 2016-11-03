@@ -199,6 +199,33 @@ namespace cellution
                 selectedCell.behavior = -3;
             }
 
+            // Press Arrows to move the selected cell
+            if (world.cellManager.selectedCell != null && (keyboardState.IsKeyDown(Keys.Up) ||
+                keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.Right) || 
+                keyboardState.IsKeyDown(Keys.Left)))
+            {
+                Cell selectedCell = world.cellManager.selectedCell;
+                selectedCell.behavior = -3;
+                Vector2 newTarget = selectedCell.sprite.position;
+                if (keyboardState.IsKeyDown(Keys.Up))
+                {
+                    newTarget.Y -= selectedCell.sprite.tex.Width * selectedCell.sprite.scale / 2 + 5;
+                }
+                if (keyboardState.IsKeyDown(Keys.Down))
+                {
+                    newTarget.Y += selectedCell.sprite.tex.Width * selectedCell.sprite.scale / 2 + 5;
+                }
+                if (keyboardState.IsKeyDown(Keys.Right))
+                {
+                    newTarget.X += selectedCell.sprite.tex.Width * selectedCell.sprite.scale / 2 + 5;
+                }
+                if (keyboardState.IsKeyDown(Keys.Left))
+                {
+                    newTarget.X -= selectedCell.sprite.tex.Width * selectedCell.sprite.scale / 2 + 5;
+                }
+                selectedCell.GoTo(newTarget);
+            }
+
             world.Update(gameTime);
 
             List<Resource> resourcesToRemove = new List<Resource>();

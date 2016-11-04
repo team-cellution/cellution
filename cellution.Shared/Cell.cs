@@ -341,10 +341,7 @@ namespace cellution
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch);
-            if (this == Game1.world.cellManager.selectedCell)
-            {
-                DrawLine(spriteBatch, sprite.position, targetPosition);
-            }
+            //DrawLine(spriteBatch, sprite.position, targetPosition);
         }
 
         void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)

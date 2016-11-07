@@ -2,16 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace cellution
 {
     public class DNA
     {
         public List<Tuple<int, double>> genes;
+        private Dictionary<string, TextItem> values;
 
         public DNA()
         {
             genes = new List<Tuple<int, double>>();
+            values = new Dictionary<string, cellution.TextItem>();
+            values.Add("a", new TextItem(World.fontManager["InfoFont"], "EatA"));
+            values.Add("c", new TextItem(World.fontManager["InfoFont"], "EatC"));
+            values.Add("g", new TextItem(World.fontManager["InfoFont"], "EatG"));
+            values.Add("t", new TextItem(World.fontManager["InfoFont"], "EatT"));
+            values.Add("wander", new TextItem(World.fontManager["InfoFont"], "Wander"));
+            values.Add("attack", new TextItem(World.fontManager["InfoFont"], "Attack"));
+            values.Add("wait", new TextItem(World.fontManager["InfoFont"], "Wait"));
 
             foreach (int i in Enumerable.Range(0, 8))
             {
@@ -83,6 +94,32 @@ namespace cellution
                 }
             }
             Console.Write("\n");
+        }
+
+        public void SetUpDNAValues(Vector2 cellPosition)
+        {
+            values["a"].Text = $"EatA: {(genes[0].Item2 * 100).ToString("0.##")}%";
+            values["a"].position = cellPosition;
+            values["c"].Text = $"EatC: {(genes[1].Item2 * 100).ToString("0.##")}%";
+            values["c"].PositionBelow(values["a"]);
+            values["g"].Text = $"EatG: {(genes[2].Item2 * 100).ToString("0.##")}%";
+            values["g"].PositionBelow(values["c"]);
+            values["t"].Text = $"EatT: {(genes[3].Item2 * 100).ToString("0.##")}%";
+            values["t"].PositionBelow(values["g"]);
+            values["wander"].Text = $"Wander: {(genes[5].Item2 * 100).ToString("0.##")}%";
+            values["wander"].PositionBelow(values["t"]);
+            values["attack"].Text = $"Attack: {(genes[6].Item2 * 100).ToString("0.##")}%";
+            values["attack"].PositionBelow(values["wander"]);
+            values["wait"].Text = $"Wait: {(genes[7].Item2 * 100).ToString("0.##")}%";
+            values["wait"].PositionBelow(values["attack"]);
+        }
+
+        public void DrawDNAValues(SpriteBatch spriteBatch)
+        {
+            foreach (var value in values)
+            {
+                value.Value.Draw(spriteBatch);
+            }
         }
 
         public void influenceGene(int index, double percent)

@@ -18,7 +18,8 @@ namespace cellution
         public int width;
         public int height;
         SpriteBatch spriteBatch;
-        public static TextureManager textureManager;
+        public static ContentManager<Texture2D> textureManager;
+        public static ContentManager<SpriteFont> fontManager;
 
         public PermanantStates<Room> rooms;
         public CellManager cellManager;

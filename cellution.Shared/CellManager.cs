@@ -29,8 +29,8 @@ namespace cellution
             this.graphics = graphics;
             cells = new List<Cell>();
             selectedCell = null;
-            cellCap = 20;
-            numCellsAtStart = 10;
+            cellCap = 50;
+            numCellsAtStart = 20;
             startWithRandomEpigenes = true;
             playerColor = new Color(75, 209, 239); // Blue
         }
@@ -189,7 +189,7 @@ namespace cellution
             newCell.g = cell.g;
             newCell.t = cell.t;
             // To be implemented in another fashion, for now, 1 in 5 non player divides changes color
-            if (cell.sprite.color != playerColor && World.Random.Next(5) == 0)
+            if (World.Random.Next(5) == 0)//&& cell.sprite.color != playerColor)
             {
                 newCell.SetColor(World.Random.Next(4)); // Excludes player Color (Blue)
             }

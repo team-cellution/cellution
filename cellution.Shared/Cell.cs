@@ -30,12 +30,14 @@ namespace cellution
         public float speed;
         public double AttackRange;
         public bool DoneDividing { get; set; }
+        public bool selected;
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
         {
             sprite = new Sprite(texture, graphics, spriteSheetInfo);
             sprite.position = position;
             sprite.origin = new Vector2(texture.Width/2, texture.Height/2);
+            sprite.scale = 1f;
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -47,13 +49,16 @@ namespace cellution
             chaseUntil = new TimeSpan(0);
             dna = new DNA();
             speed = 2.0f;
-            AttackRange = 200;
+            AttackRange = 300;
+            selected = false;
         }
 
         public void Update(GameTime gameTime)
         {
+            UpdateSize();
             KillCellIfTooOld();
             StopCellIfReady();
+            KillInteriorCells();
 
             /*if (lastBehavior == -4)
             {
@@ -110,6 +115,10 @@ namespace cellution
                 // Mid Action, Do Nothing
                 default:
                     break;
+            }
+            if (selected)
+            {
+                dna.SetUpDNAValues(sprite.position);
             }
             sprite.Update(gameTime);
         }
@@ -169,7 +178,8 @@ namespace cellution
                 double nTDist = Double.MaxValue;
                 foreach (Cell cell in Game1.world.cellManager.cells)
                 {
-                    if (cell.sprite.color != sprite.color)//cell.id != id)
+                    // Only attack those who are different colored and smaller
+                    if (cell.sprite.color != sprite.color && cell.sprite.scale < sprite.scale)//cell.id != id)
                     {
                         double temp = Vector2.Distance(cell.sprite.position, sprite.position);
                         if (temp < nTDist)
@@ -190,8 +200,8 @@ namespace cellution
             // If target lives
             else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
             {
-                // If at target, kill them and reset
-                if (sprite.rectangle.Contains(targetCell.sprite.position))
+                // If at target and target is smaller, kill them and reset
+                if (sprite.rectangle.Contains(targetCell.sprite.position) && targetCell.sprite.scale < sprite.scale)
                 {
                     targetCell.kill = true;
                     a += targetCell.a * 3 / 4;
@@ -263,7 +273,7 @@ namespace cellution
         public void StopCellIfReady()
         {
             // If at target and not waiting
-            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < sprite.tex.Width / 2 - 3)
+            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < sprite.tex.Width * sprite.scale / 2 - 3)
             {
                 // Stop
                 sprite.velocity = Vector2.Zero;
@@ -271,6 +281,22 @@ namespace cellution
                 if (behavior != 6)
                 {
                     behavior = -1;
+                }
+            }
+        }
+
+        private void KillInteriorCells()
+        {
+            foreach (Cell cell in Game1.world.cellManager.cells)
+            {
+                // If at target and target is smaller, kill them and reset
+                if (cell.sprite.color != sprite.color && sprite.rectangle.Contains(cell.sprite.position) && cell.sprite.scale < sprite.scale)
+                {
+                    cell.kill = true;
+                    a += cell.a * 3 / 4;
+                    c += cell.c * 3 / 4;
+                    g += cell.g * 3 / 4;
+                    t += cell.t * 3 / 4;
                 }
             }
         }
@@ -308,6 +334,11 @@ namespace cellution
             sprite.velocity *= speed;
         }
 
+        public void UpdateSize()
+        {
+            sprite.scale = (a + c + g + t) / 400f + 1f;
+        }
+
         public void SetDoneDividing()
         {
             DoneDividing = true;
@@ -316,10 +347,11 @@ namespace cellution
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch);
-            if (this == Game1.world.cellManager.selectedCell)
+            if (selected)
             {
-                DrawLine(spriteBatch, sprite.position, targetPosition);
+                dna.DrawDNAValues(spriteBatch);
             }
+            //DrawLine(spriteBatch, sprite.position, targetPosition);
         }
 
         void DrawLine(SpriteBatch sb, Vector2 start, Vector2 end)

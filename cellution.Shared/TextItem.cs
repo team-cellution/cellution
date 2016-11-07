@@ -39,6 +39,16 @@ namespace cellution
             origin = new Vector2(TextSize.X / 2, TextSize.Y / 2);
         }
 
+        public void PositionBelow(TextItem textItem, float margin = 10.0f)
+        {
+            position = new Vector2(textItem.position.X, textItem.position.Y + textItem.TextSize.Y + margin);
+        }
+
+        public void PositionRight(TextItem textItem, float margin)
+        {
+            position = new Vector2(textItem.position.X + textItem.TextSize.X + margin, textItem.position.Y);
+        }
+
         public override void Update()
         {
             position += velocity;

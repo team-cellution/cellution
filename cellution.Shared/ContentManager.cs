@@ -1,17 +1,14 @@
-﻿using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace cellution
 {
-    public class TextureManager
+    public class ContentManager<T>
     {
-        private ContentManager Content;
-        private Dictionary<string, Texture2D> textures;
+        private Microsoft.Xna.Framework.Content.ContentManager Content;
+        private Dictionary<string, T> textures;
 
-        public Texture2D this[string key]
+        public T this[string key]
         {
             get
             {
@@ -26,15 +23,15 @@ namespace cellution
             }
         }
 
-        public TextureManager(ContentManager Content)
+        public ContentManager(Microsoft.Xna.Framework.Content.ContentManager Content)
         {
             this.Content = Content;
-            textures = new Dictionary<string, Texture2D>();
+            textures = new Dictionary<string, T>();
         }
 
         public void Load(string textureName)
         {
-            textures.Add(textureName, Content.Load<Texture2D>(textureName));
+            textures.Add(textureName, Content.Load<T>(textureName));
         }
     }
 }

@@ -23,7 +23,7 @@ namespace cellution
         public bool divide;
         public int lastBehavior;
         public TimeSpan waitUntil;
-        public DateTime dEathDay;
+        public DateTime deathDay;
         public bool kill;
         public Cell targetCell;
         public TimeSpan chaseUntil;

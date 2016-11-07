@@ -22,6 +22,7 @@ namespace cellution
         SpriteFont scoreFont;
         StatsGUI statsGUI;
         Background background;
+        DNAGui dnaGui;
 
         public Game1()
         {
@@ -84,6 +85,7 @@ namespace cellution
             world.cellManager = new CellManager(World.textureManager["fancy_cell_greyscale"], graphics);
             world.cellManager.SpawnCell();
             statsGUI = new StatsGUI(World.textureManager["helix-resource"], scoreFont, world.cellManager);
+            dnaGui = new DNAGui(World.textureManager["helix-resource"], scoreFont, world.cellManager);
 
             world.rooms.CurrentState.AddUpdate(world.resourceManager.Update);
             world.rooms.CurrentState.AddUpdate(statsGUI.Update);
@@ -95,6 +97,8 @@ namespace cellution
             world.rooms.GetState(UpgradeRoom).AddDraw(world.cellManager.DrawSelected);
             world.rooms.GetState(UpgradeRoom).AddDraw(statsGUI.Draw);
             world.rooms.GetState(UpgradeRoom).AddUpdate(statsGUI.Update);
+            world.rooms.GetState(UpgradeRoom).AddDraw(dnaGui.Draw);
+            world.rooms.GetState(UpgradeRoom).AddUpdate(dnaGui.Update);
         }
 
         /// <summary>
@@ -125,7 +129,10 @@ namespace cellution
                 previousMouseState.LeftButton == ButtonState.Released)
             {
                 bool playerHasACell = false;
-                world.cellManager.selectedCell = null;
+                if (world.rooms.GetState(UpgradeRoom) != world.rooms.CurrentState)
+                {
+                    world.cellManager.selectedCell = null;
+                }
                 Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
 
                 foreach (Cell cell in world.cellManager.cells)

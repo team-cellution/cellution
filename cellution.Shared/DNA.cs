@@ -66,7 +66,7 @@ namespace cellution
                         Console.Write(" EatG:" + Math.Round(gene.Item2, 3) * 100 + "%");
                         break;
                     case 4:
-                        Console.Write(" EatA:" + Math.Round(gene.Item2, 3) * 100 + "%");
+                        Console.Write(" Divide:" + Math.Round(gene.Item2, 3) * 100 + "%"); 
                         break;
                     case 5:
                         Console.Write(" Wander:" + Math.Round(gene.Item2, 3) * 100 + "%");

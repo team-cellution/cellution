@@ -145,8 +145,9 @@ namespace cellution
                 if (world.rooms.GetState(UpgradeRoom) != world.rooms.CurrentState)
                 {
                     world.cellManager.selectedCell = null;
+                    highlightRing.SetHighlightCell(null);
                 }
-                highlightRing.SetHighlightCell(null);
+                
 
                 Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
 

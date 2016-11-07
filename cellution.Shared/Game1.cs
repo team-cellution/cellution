@@ -224,6 +224,22 @@ namespace cellution
                 selectedCell.behavior = -3;
             }
 
+            // Press 'W' to try to have the selected cell wander
+            if (world.cellManager.selectedCell != null && keyboardState.IsKeyDown(Keys.S) &&
+                previousKeyboardState.IsKeyUp(Keys.S))
+            {
+                Cell selectedCell = world.cellManager.selectedCell;
+                if (selectedCell.autoSelected == false)
+                {
+                    selectedCell.behavior = -1;
+                    selectedCell.autoSelected = true;
+                }
+                else
+                {
+                    selectedCell.autoSelected = false;
+                }
+            }
+
             // Press Arrows to move the selected cell
             if (world.cellManager.selectedCell != null && (keyboardState.IsKeyDown(Keys.Up) ||
                 keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.Right) || 

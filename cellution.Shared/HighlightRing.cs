@@ -47,6 +47,7 @@ namespace cellution
             if (targetCell != null)
             {
                 sprite.position = targetCell.sprite.position;
+                sprite.scale = targetCell.sprite.scale;
                 sprite.Update(gameTime);
             }
             

@@ -32,6 +32,7 @@ namespace cellution
         public double AttackRange;
         public bool DoneDividing { get; set; }
         public bool selected;
+        public bool autoSelected;
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
         {
@@ -52,6 +53,7 @@ namespace cellution
             startingSpeed = speed = 3.0f;
             AttackRange = 300;
             selected = false;
+            autoSelected = false;
         }
 
         public void Update(GameTime gameTime)
@@ -305,7 +307,7 @@ namespace cellution
         public void TryRegenerateBehavior()
         {
             // Generate a random behavior choice if behavior is reset and the cell is not selected
-            if (behavior == -1 && this != Game1.world.cellManager.selectedCell)
+            if (behavior == -1 && (this != Game1.world.cellManager.selectedCell || autoSelected))
             {
                 rand = World.Random.NextDouble();
                 int tempIndex = 0;

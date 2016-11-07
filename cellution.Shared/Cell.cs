@@ -28,6 +28,7 @@ namespace cellution
         public Cell targetCell;
         public TimeSpan chaseUntil;
         public float speed;
+        public float startingSpeed;
         public double AttackRange;
         public bool DoneDividing { get; set; }
         public bool selected;
@@ -43,12 +44,12 @@ namespace cellution
             lastBehavior = -4;
             divide = false;
             waitUntil = new TimeSpan(0);
-            deathDay = DateTime.Now.AddMinutes(5);
+            deathDay = DateTime.Now.AddMinutes(10);
             kill = false;
             targetCell = this;
             chaseUntil = new TimeSpan(0);
             dna = new DNA();
-            speed = 2.0f;
+            startingSpeed = speed = 3.0f;
             AttackRange = 300;
             selected = false;
         }
@@ -337,6 +338,7 @@ namespace cellution
         public void UpdateSize()
         {
             sprite.scale = (a + c + g + t) / 400f + 1f;
+            speed = startingSpeed / sprite.scale;
         }
 
         public void SetDoneDividing()

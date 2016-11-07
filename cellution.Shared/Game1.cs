@@ -19,7 +19,8 @@ namespace cellution
 
         const string UpgradeRoom = "upgrade";
 
-        SpriteFont scoreFont;
+        HighlightRing highlightRing;
+
         StatsGUI statsGUI;
         Background background;
 
@@ -49,7 +50,8 @@ namespace cellution
         protected override void Initialize()
         {
             world = new World(graphics);
-            World.textureManager = new TextureManager(Content);
+            World.textureManager = new ContentManager<Texture2D>(Content);
+            World.fontManager = new ContentManager<SpriteFont>(Content);
             world.rooms.AddState(UpgradeRoom, new Room(graphics));
 
             world.resourceManager = new ResourceManager(graphics.GraphicsDevice.Viewport);
@@ -73,26 +75,34 @@ namespace cellution
             World.textureManager.Load("BG-Layer");
             World.textureManager.Load("helix-resource");
             World.textureManager.Load("Cell-Division");
-            scoreFont = Content.Load<SpriteFont>("ScoreFont");
+            World.textureManager.Load("highlight_ring");
+
+            World.fontManager.Load("ScoreFont");
+            World.fontManager.Load("InfoFont");
 
             // create 1x1 texture for line drawing
             world.oneByOne = new Texture2D(GraphicsDevice, 1, 1);
             world.oneByOne.SetData<Color>(
                 new Color[] { Color.White });// fill the texture with white
 
+            highlightRing = new HighlightRing(World.textureManager["highlight_ring"]);
+
             background = new Background(World.textureManager["BG-Layer"], graphics.GraphicsDevice.Viewport);
             world.cellManager = new CellManager(World.textureManager["fancy_cell_greyscale"], graphics);
             world.cellManager.SpawnCell();
-            statsGUI = new StatsGUI(World.textureManager["helix-resource"], scoreFont, world.cellManager);
+            statsGUI = new StatsGUI(World.textureManager["helix-resource"], world.cellManager);
 
             world.rooms.CurrentState.AddUpdate(world.resourceManager.Update);
             world.rooms.CurrentState.AddUpdate(statsGUI.Update);
             world.rooms.CurrentState.AddDraw(background.Draw);
             world.rooms.CurrentState.AddDraw(world.resourceManager.Draw);
             world.rooms.CurrentState.AddUpdate(world.cellManager.Update);
+            world.rooms.CurrentState.AddUpdate(highlightRing.Update);
             world.rooms.CurrentState.AddDraw(world.cellManager.Draw);
+            world.rooms.CurrentState.AddDraw(highlightRing.Draw);
             world.rooms.CurrentState.AddDraw(statsGUI.Draw);
             world.rooms.GetState(UpgradeRoom).AddDraw(world.cellManager.DrawSelected);
+            world.rooms.GetState(UpgradeRoom).AddDraw(highlightRing.Draw);
             world.rooms.GetState(UpgradeRoom).AddDraw(statsGUI.Draw);
             world.rooms.GetState(UpgradeRoom).AddUpdate(statsGUI.Update);
         }
@@ -126,15 +136,19 @@ namespace cellution
             {
                 bool playerHasACell = false;
                 world.cellManager.selectedCell = null;
+                highlightRing.SetHighlightCell(null);
                 Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
 
                 foreach (Cell cell in world.cellManager.cells)
                 {
+                    cell.selected = false;
                     if (cell.sprite.color == world.cellManager.playerColor)
                     {
                         if (cell.sprite.rectangle.Contains(transformedMouseState))
                         {
+                            cell.selected = true;
                             world.cellManager.selectedCell = cell;
+                            highlightRing.SetHighlightCell(cell);
                         }
                         playerHasACell = true;
                     }

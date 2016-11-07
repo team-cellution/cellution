@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CellManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DNA.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HighlightRing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PermanantStates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResourceManager.cs" />
@@ -28,7 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SpriteSheet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StatsGUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TextureManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContentManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)World.cs" />
   </ItemGroup>
 </Project>

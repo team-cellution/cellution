@@ -30,6 +30,7 @@ namespace cellution
         public float speed;
         public double AttackRange;
         public bool DoneDividing { get; set; }
+        public bool selected;
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
         {
@@ -49,6 +50,7 @@ namespace cellution
             dna = new DNA();
             speed = 2.0f;
             AttackRange = 300;
+            selected = false;
         }
 
         public void Update(GameTime gameTime)
@@ -113,6 +115,10 @@ namespace cellution
                 // Mid Action, Do Nothing
                 default:
                     break;
+            }
+            if (selected)
+            {
+                dna.SetUpDNAValues(sprite.position);
             }
             sprite.Update(gameTime);
         }
@@ -341,6 +347,10 @@ namespace cellution
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch);
+            if (selected)
+            {
+                dna.DrawDNAValues(spriteBatch);
+            }
             //DrawLine(spriteBatch, sprite.position, targetPosition);
         }
 

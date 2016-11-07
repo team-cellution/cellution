@@ -34,20 +34,20 @@ namespace cellution
         private TextItem tScore;
         private CellManager cellManager;
 
-        public StatsGUI(Texture2D background, SpriteFont spriteFont, CellManager cellManager)
+        public StatsGUI(Texture2D background, CellManager cellManager)
         {
             this.background = new Sprite(background);
             this.background.origin = Vector2.Zero;
-            aScore = new TextItem(spriteFont, "0");
+            aScore = new TextItem(World.fontManager["ScoreFont"], "0");
             aScore.origin = Vector2.Zero;
             aScore.color = new Color(248, 215, 241);
-            cScore = new TextItem(spriteFont, "0");
+            cScore = new TextItem(World.fontManager["ScoreFont"], "0");
             cScore.origin = Vector2.Zero;
             cScore.color = new Color(245, 248, 195);
-            gScore = new TextItem(spriteFont, "0");
+            gScore = new TextItem(World.fontManager["ScoreFont"], "0");
             gScore.origin = Vector2.Zero;
             gScore.color = new Color(193, 250, 196);
-            tScore = new TextItem(spriteFont, "0");
+            tScore = new TextItem(World.fontManager["ScoreFont"], "0");
             tScore.origin = Vector2.Zero;
             tScore.color = new Color(190, 245, 255);
             this.cellManager = cellManager;

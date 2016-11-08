@@ -9,30 +9,41 @@ namespace cellution
 {
     public class Cell
     {
-        public Sprite sprite;
-        public Vector2 targetPosition;
-        public int a;
-        public int c;
-        public int g;
-        public int t;
-        public string name;
-        public int id;
-        public DNA dna;
-        private double rand;
+        public Sprite sprite; // the cell graphic
+        public Vector2 targetPosition; // the position the cell moves towards
+        public int a; // amount of 'a' resource contained in the cell
+        public int c; // amount of 'c' resource contained in the cell
+        public int g; // amount of 'g' resource contained in the cell
+        public int t; // amount of 't' resource contained in the cell
+        public string name; // debug name for the cell
+        public int id; // the unique id of the cell
+        public DNA dna; // the dna of the cell (contains behaviors and probabilities (epigenes))
+        //private double rand; // random number for generating random behaviors is stored in this
         public int behavior; // -1 is ready, -2 is player command, -3 is mid cell action
-        public bool divide;
-        public int lastBehavior;
-        public TimeSpan waitUntil;
-        public DateTime deathDay;
-        public bool kill;
-        public Cell targetCell;
-        public TimeSpan chaseUntil;
-        public float speed;
-        public float startingSpeed;
-        public double AttackRange;
+        public bool divide; // triggers cell to be added to divide list in CellManager
+        public int lastBehavior; // the last behavior of the cell
+        public TimeSpan waitUntil; // the timespan the cell must wait for gameTime to be before it stops waiting 
+        public DateTime deathDay; // the time that the cell dies of old age
+        public bool kill; // triggers cell to be added to kill list in CellManager
+        public Cell targetCell; // the targetCell that the cell is attacking, equal to 'this' if it is not attacking
+        public TimeSpan chaseUntil; // the timespan the cell must wait for gameTime to be before it stops attacking a cell
+        public float speed; // the speed the cell moves at. On each update: speed = startingSpeed * cell.sprite.scale
+        public float startingSpeed; // the starting speed of the cell
+        public double AttackRange; // the range that the cell can see enemies it might attack
+        public int minToDivA; // the minimum amount of 'a' required for the cell to divide
+        public int minToDivC; // the minimum amount of 'c' required for the cell to divide
+        public int minToDivG; // the minimum amount of 'g' required for the cell to divide
+        public int minToDivT; // the minimum amount of 't' required for the cell to divide
+        public double absorbEfficiency; // the efficiency of the cell in absorbing the resources of cells it eats
         public bool DoneDividing { get; set; }
-        public bool selected;
-        public bool autoSelected;
+        public bool selected; // if the cell is the selectedCell in CellManager
+        public bool autoSelected; // if the cell is the selectedCell and it is set to auto behavior mode
+        public int chaseSecs; // the amount of seconds the cell will chase a cell it is attacking
+        public int waitSecs; // the amount of seconds the cell will wait during the wait behavior
+        public int influencePercent; // the percent chance that the chosen behavior's probability is increased with each use
+        public float sizeResourceDenominator; // the number that the sum of resources is divided by when calculating size
+        public int killingSpreeTotal; // How many cells will it have to kill before stopping its spree
+        public int killingSpreeCounter; // how many cells it has killed in the spree so far
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
         {
@@ -54,6 +65,14 @@ namespace cellution
             AttackRange = 300;
             selected = false;
             autoSelected = false;
+            minToDivA = minToDivC = minToDivG = minToDivT = 10;
+            absorbEfficiency = 3 / 4;
+            chaseSecs = 5;
+            waitSecs = 1;
+            influencePercent = 1;
+            sizeResourceDenominator = 400f;
+            killingSpreeCounter = 0;
+            killingSpreeTotal = 5;
         }
 
         public void Update(GameTime gameTime)
@@ -96,7 +115,7 @@ namespace cellution
                     break;
                 // Divide
                 case 4:
-                    if (a >= 10 && c >= 10 && g >= 10 && t >= 10)
+                    if (a >= minToDivA && c >= minToDivC && g >= minToDivG && t >= minToDivT)
                     {
                         divide = true;
                     }
@@ -113,8 +132,27 @@ namespace cellution
                     break;
                 // Wait
                 case 7:
-                    wait(gameTime);
+                    Wait(gameTime);
                     break;
+                // behaviors past this point can only be mutated/cells dont start with these\
+                //
+                // congregate (move to nearest friendly cell)
+                case 8:
+                    Congregate(gameTime);
+                    break;
+                // killing spree (go on a killing spree of enemies)
+                case 9:
+                    Attack(gameTime, true);
+                    break;
+                // cannabalize (eat the closest cell of your own team)
+                case 10:
+                    Attack(gameTime, false, true);
+                    break;
+                // glutton (go on an eating spree)
+                // breed like rabbits (divide until you cannot anymore)
+                // home base (move to a specific corner based on team)
+                // flee (run away from the closest cell)
+
                 // Mid Action, Do Nothing
                 default:
                     break;
@@ -125,6 +163,7 @@ namespace cellution
             }
             sprite.Update(gameTime);
         }
+        // Eat the nearest resource of type: 0 = a, 1 = c,  2 = g, 3 = t
         private void Eat(int resourceType)
         {
             Resource.ResourceTypes rType;
@@ -173,16 +212,40 @@ namespace cellution
                 behavior = -1;
             }
         }
+        
+        // cell waits for waitSecs seconds
+        public void Wait(GameTime gameTime)
+        {
+            if (waitUntil.Ticks == 0)
+            {
+                waitUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, waitSecs));
+                //Console.WriteLine("gameTime: " + gameTime.TotalGameTime + " waitUntil: " + waitUntil);
+                sprite.velocity = Vector2.Zero;
+            }
+            else if (gameTime.TotalGameTime.CompareTo(waitUntil) == 1)
+            {
+                //Console.Write("Stop Waiting: " + gameTime.TotalGameTime);
+                waitUntil = new TimeSpan(0);
+                behavior = -1;
+            }
+        }
 
-        public void Attack(GameTime gameTime)
+        // go to a random coordinate on the map
+        public void Wander()
+        {
+            GoTo(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height)));
+        }
+
+        // follow the nearest friendly cell
+        public void Congregate(GameTime gameTime)
         {
             if (targetCell.id == id)
             {
                 double nTDist = Double.MaxValue;
                 foreach (Cell cell in Game1.world.cellManager.cells)
                 {
-                    // Only attack those who are different colored and smaller
-                    if (cell.sprite.color != sprite.color && cell.sprite.scale < sprite.scale)//cell.id != id)
+                    // Only friendly cells
+                    if (cell.sprite.color == sprite.color)//cell.id != id)
                     {
                         double temp = Vector2.Distance(cell.sprite.position, sprite.position);
                         if (temp < nTDist)
@@ -193,24 +256,19 @@ namespace cellution
                     }
                 }
                 //Console.WriteLine("Dist " + nTDist);
-                // If it couldn't find any cells in range, reset behavior
+                // If it couldn't find any friendly cells in range, reset behavior
                 if (nTDist > AttackRange || targetCell.id == id)
                 {
                     targetCell = this;
                     behavior = -1;
                 }
             }
-            // If target lives
-            else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
+            
+            else if (targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
             {
-                // If at target and target is smaller, kill them and reset
-                if (sprite.rectangle.Contains(targetCell.sprite.position) && targetCell.sprite.scale < sprite.scale)
+                // If at target cell, reset behavior
+                if (sprite.rectangle.Contains(targetCell.sprite.position))
                 {
-                    targetCell.kill = true;
-                    a += targetCell.a * 3 / 4;
-                    c += targetCell.c * 3 / 4;
-                    g += targetCell.g * 3 / 4;
-                    t += targetCell.t * 3 / 4;
                     targetCell = this;
                     behavior = -1;
                 }
@@ -219,7 +277,7 @@ namespace cellution
                     // Cells only give chase for 5 seconds before giving up
                     if (chaseUntil.Ticks == 0)
                     {
-                        chaseUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, 0, 5));
+                        chaseUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, 0, chaseSecs));
                         // Give chase
                         GoTo(targetCell.sprite.position);
                     }
@@ -236,43 +294,143 @@ namespace cellution
                     }
                 }
             }
+            else // If target died before it could be reached
+            {
+                behavior = -1;
+            }
+        }
+
+        // attack the neaest enemy cell with optional killing spree or cannibal
+        public void Attack(GameTime gameTime, bool spree=false, bool cannibal=false)
+        {
+            if (targetCell.id == id)
+            {
+                double nTDist = Double.MaxValue;
+                foreach (Cell cell in Game1.world.cellManager.cells)
+                {
+                    // Only attack those who are different colored and smaller
+                    if ((!cannibal && cell.sprite.color != sprite.color) || (cannibal && cell.sprite.color == sprite.color) &&
+                        cell.sprite.scale < sprite.scale)//cell.id != id)
+                    {
+                        double temp = Vector2.Distance(cell.sprite.position, sprite.position);
+                        if (temp < nTDist)
+                        {
+                            nTDist = temp;
+                            targetCell = cell;
+                        }
+                    }
+                }
+                //Console.WriteLine("Dist " + nTDist);
+                // If it couldn't find any cells in range, reset behavior
+                if (nTDist > AttackRange || targetCell.id == id)
+                {
+                    targetCell = this;
+                    if (spree)
+                    {
+                        killingSpreeCounter++;
+                        if (killingSpreeCounter >= killingSpreeTotal)
+                        {
+                            killingSpreeCounter = 0;
+                            behavior = -1;
+                        }
+                    }
+                    else
+                    {
+                        behavior = -1;
+                    }
+                }
+            }
+            // If target lives
+            else if (!kill && targetCell.id != id && Game1.world.cellManager.cells.Contains(targetCell))
+            {
+                // If at target and target is smaller, kill them and reset
+                if (sprite.rectangle.Contains(targetCell.sprite.position) && targetCell.sprite.scale < sprite.scale)
+                {
+                    targetCell.kill = true;
+                    a += (int)(targetCell.a * absorbEfficiency);
+                    c += (int)(targetCell.c * absorbEfficiency);
+                    g += (int)(targetCell.g * absorbEfficiency);
+                    t += (int)(targetCell.t * absorbEfficiency);
+                    targetCell = this;
+                    if (spree)
+                    {
+                        killingSpreeCounter++;
+                        if (killingSpreeCounter >= killingSpreeTotal)
+                        {
+                            killingSpreeCounter = 0;
+                            behavior = -1;
+                        }
+                    }
+                    else
+                    {
+                        behavior = -1;
+                    }
+                }
+                else
+                {
+                    // Cells only give chase for 5 seconds before giving up
+                    if (chaseUntil.Ticks == 0)
+                    {
+                        chaseUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, 0, chaseSecs));
+                        // Give chase
+                        GoTo(targetCell.sprite.position);
+                    }
+                    else if (gameTime.TotalGameTime.CompareTo(chaseUntil) == 1)
+                    {
+                        chaseUntil = new TimeSpan(0);
+                        targetCell = this;
+                        if (spree)
+                        {
+                            killingSpreeCounter++;
+                            if (killingSpreeCounter >= killingSpreeTotal)
+                            {
+                                killingSpreeCounter = 0;
+                                behavior = -1;
+                            }
+                        }
+                        else
+                        {
+                            behavior = -1;
+                        }
+                    }
+                    else
+                    {
+                        // Give chase
+                        GoTo(targetCell.sprite.position);
+                    }
+                }
+            }
             else // If target died before it could be killed
             {
-                behavior = -1;
+                if (spree)
+                {
+                    killingSpreeCounter++;
+                    if (killingSpreeCounter >= killingSpreeTotal)
+                    {
+                        killingSpreeCounter = 0;
+                        behavior = -1;
+                    }
+                }
+                else
+                {
+                    behavior = -1;
+                }
             }
         }
 
-        public void wait(GameTime gameTime)
-        {
-            if (waitUntil.Ticks == 0)
-            {
-                waitUntil = gameTime.TotalGameTime.Add(new TimeSpan(0, 0, 1));
-                //Console.WriteLine("gameTime: " + gameTime.TotalGameTime + " waitUntil: " + waitUntil);
-                sprite.velocity = Vector2.Zero;
-            }
-            else if (gameTime.TotalGameTime.CompareTo(waitUntil) == 1)
-            {
-                //Console.Write("Stop Waiting: " + gameTime.TotalGameTime);
-                waitUntil = new TimeSpan(0);
-                behavior = -1;
-            }
-        }
-
-        public void Wander()
-        {
-            GoTo(new Vector2(World.Random.Next(Game1.world.resourceManager.viewport.Width), World.Random.Next(Game1.world.resourceManager.viewport.Height)));
-        }
-
+        // Kill the cell if its past their deathDay
         public void KillCellIfTooOld()
         {
             // Cell dies of old age
             if (DateTime.Now.CompareTo(deathDay) == 1)
             {
-                Console.WriteLine("Marked for dEath " + id);
+                Console.WriteLine("Marked for death " + id);
                 kill = true;
             }
         }
 
+        // crucial behavior which stops the cell and resets behavior if it encompasses the targetPosition and isn't waiting.
+        // If it is attacking it does not reset behavior.  
         public void StopCellIfReady()
         {
             // If at target and not waiting
@@ -280,14 +438,15 @@ namespace cellution
             {
                 // Stop
                 sprite.velocity = Vector2.Zero;
-                // If not Attacking, reset behavior
-                if (behavior != 6)
+                // If not Attacking or congregating, reset behavior
+                if (behavior != 6 && behavior != 8)
                 {
                     behavior = -1;
                 }
             }
         }
 
+        // kill any smaller cells within the interior of the cell
         private void KillInteriorCells()
         {
             foreach (Cell cell in Game1.world.cellManager.cells)
@@ -296,20 +455,22 @@ namespace cellution
                 if (cell.sprite.color != sprite.color && sprite.rectangle.Contains(cell.sprite.position) && cell.sprite.scale < sprite.scale)
                 {
                     cell.kill = true;
-                    a += cell.a * 3 / 4;
-                    c += cell.c * 3 / 4;
-                    g += cell.g * 3 / 4;
-                    t += cell.t * 3 / 4;
+                    a += (int)(cell.a * absorbEfficiency);
+                    c += (int)(cell.c * absorbEfficiency);
+                    g += (int)(cell.g * absorbEfficiency);
+                    t += (int)(cell.t * absorbEfficiency);
                 }
             }
         }
 
+        // if the behavior is reset (-1) and the cell is not selected or on auto, then the behavior is randomly generated
+        // using the probabilities (epigenes) of each gene in the cell's dna
         public void TryRegenerateBehavior()
         {
             // Generate a random behavior choice if behavior is reset and the cell is not selected
             if (behavior == -1 && (this != Game1.world.cellManager.selectedCell || autoSelected))
             {
-                rand = World.Random.NextDouble();
+                double rand = World.Random.NextDouble();
                 int tempIndex = 0;
                 foreach (Tuple<int, double> gene in dna.genes)
                 {
@@ -317,7 +478,7 @@ namespace cellution
                     if (rand <= 0)
                     {
                         behavior = gene.Item1;
-                        dna.influenceGene(tempIndex, 1);
+                        dna.influenceGene(tempIndex, influencePercent);
                         if (sprite.color == Game1.world.cellManager.playerColor)
                         {
                             dna.print();
@@ -329,6 +490,7 @@ namespace cellution
             }
         }
 
+        // Moves to the target vector
         public void GoTo(Vector2 target)
         {
             targetPosition = target;
@@ -337,9 +499,10 @@ namespace cellution
             sprite.velocity *= speed;
         }
 
+        // updates the size and speed based on sum of resources
         public void UpdateSize()
         {
-            sprite.scale = (a + c + g + t) / 400f + 1f;
+            sprite.scale = (a + c + g + t) / sizeResourceDenominator + 1f;
             speed = startingSpeed / sprite.scale;
         }
 
@@ -376,6 +539,7 @@ namespace cellution
 
         }
 
+        // Set the cell color to one of the indices
         public void SetColor(int index)
         {
             if (index == 0)

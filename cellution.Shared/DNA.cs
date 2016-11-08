@@ -9,7 +9,7 @@ namespace cellution
 {
     public class DNA
     {
-        public List<Tuple<int, double>> genes;
+        public List<Tuple<int, double>> genes; // list of genes
         private Dictionary<string, TextItem> values;
 
         public DNA()
@@ -31,6 +31,7 @@ namespace cellution
             recalcEpigenes();
         }
 
+        // rebalance the genes probabilities to total to 1.00 (100%)
         public void recalcEpigenes()
         {
             double maxVal = Double.MinValue;
@@ -57,6 +58,7 @@ namespace cellution
             genes = tempList;
         }
 
+        // print out the dna in the debug console
         public void print()
         {
             Console.Write("\n");
@@ -122,12 +124,14 @@ namespace cellution
             }
         }
 
+        // increase the probability of a gene by a percent, then recalc the epigenes
         public void influenceGene(int index, double percent)
         {
             replaceGene(index, genes[index].Item1, genes[index].Item2 + percent / 100 / genes.Count);
             recalcEpigenes();
         }
 
+        // replace a gene with a new behavior and new epigene
         public void replaceGene(int index, int newBehavior, double newEpigene)
         {
             List<Tuple<int, double>> tempList = new List<Tuple<int, double>>();
@@ -147,6 +151,7 @@ namespace cellution
             genes = tempList;
         }
 
+        // randomly assigns probabilities to the genes and recalcs the totals
         public void Randomize()
         {
             int index = 0;

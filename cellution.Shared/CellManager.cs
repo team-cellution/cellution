@@ -35,6 +35,7 @@ namespace cellution
             playerColor = new Color(75, 209, 239); // Blue
         }
 
+        // places a random cell with random probability into the game. if there are no cells, the first cell is a player cell.
         public void SpawnCell()
         {
             foreach (int i in Enumerable.Range(0, numCellsAtStart))
@@ -56,6 +57,7 @@ namespace cellution
 
         }
 
+        // creates a brand new non player cell at a position with a random color
         public Cell CreateCell(Vector2 position)
         {
             Cell cell = new Cell(position, cellTexture, graphics, new SpriteSheetInfo(120, 120));
@@ -68,6 +70,7 @@ namespace cellution
             return cell;
         }
 
+        // creates a brand new player cell at a position
         public Cell CreatePlayerCell(Vector2 position)
         {
             Cell cell = new Cell(position, cellTexture, graphics, new SpriteSheetInfo(120, 120));
@@ -82,7 +85,7 @@ namespace cellution
 
         public void Update(GameTime gameTime)
         {
-            // Keeps the number of alive cells constant
+            // helps keep the number of alive cells constant
             if (cells.Count < cellCap && World.Random.Next(100) == 0)
             {
                 cells.Add(CreateCell(new Vector2(World.Random.Next(0, 1920), World.Random.Next(0, 1080))));
@@ -176,6 +179,7 @@ namespace cellution
             cell.sprite.animations.CurrentAnimationName = "divide";
         }
 
+        // splits a cell into two cells
         public void DivideCell(Cell cell)
         {
             cell.a /= 2;
@@ -201,6 +205,7 @@ namespace cellution
             cells.Add(newCell);
         }
 
+        // kills the cell
         public void KillCell(Cell cell)
         {
             cells.Remove(cell);

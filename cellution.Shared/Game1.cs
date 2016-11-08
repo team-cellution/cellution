@@ -132,11 +132,13 @@ namespace cellution
             KeyboardState keyboardState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
 
+            // press esc to exit
             if (keyboardState.IsKeyDown(Keys.Escape))
             {
                 Exit();
             }
 
+            // left click on a player cell to select it
             if (mouseState.LeftButton == ButtonState.Pressed &&
                 previousMouseState.LeftButton == ButtonState.Released)
             {
@@ -171,6 +173,7 @@ namespace cellution
                 }
             }
 
+            // if a cell is selected, right click to move it to the mouse's position
             if (mouseState.RightButton == ButtonState.Pressed)
             {
                 foreach (Cell cell in world.cellManager.cells)
@@ -184,6 +187,7 @@ namespace cellution
                 }
             }
 
+            // space bar toggles upgrade room
             if (keyboardState.IsKeyDown(Keys.Space) &&
                 previousKeyboardState.IsKeyUp(Keys.Space))
             {
@@ -225,7 +229,7 @@ namespace cellution
                 selectedCell.behavior = -3;
             }
 
-            // Press 'W' to try to have the selected cell wander
+            // Press 'S' to try to toggle the selected cell's auto behavior
             if (world.cellManager.selectedCell != null && keyboardState.IsKeyDown(Keys.S) &&
                 previousKeyboardState.IsKeyUp(Keys.S))
             {

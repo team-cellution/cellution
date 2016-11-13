@@ -92,7 +92,7 @@ namespace cellution
             world.cellManager = new CellManager(World.textureManager["fancy_cell_greyscale"], graphics);
             world.cellManager.SpawnCell();
 
-            dnaGui = new DNAGui(World.textureManager["helix-resource"], World.fontManager["ScoreFont"], world.cellManager);
+            dnaGui = new DNAGui(graphics, World.textureManager["helix-resource"], world.cellManager);
 
             statsGUI = new StatsGUI(World.textureManager["helix-resource"], world.cellManager);
 
@@ -323,7 +323,14 @@ namespace cellution
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            if (world.rooms.CurrentName == UpgradeRoom)
+            {
+                GraphicsDevice.Clear(Color.Black);
+            }
+            else
+            {
+                GraphicsDevice.Clear(Color.CornflowerBlue);
+            }
 
             world.BeginDraw();
             world.Draw();

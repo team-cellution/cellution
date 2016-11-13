@@ -157,10 +157,6 @@ namespace cellution
                 default:
                     break;
             }
-            if (selected)
-            {
-                dna.SetUpDNAValues(sprite.position);
-            }
             sprite.Update(gameTime);
         }
         // Eat the nearest resource of type: 0 = a, 1 = c,  2 = g, 3 = t
@@ -478,7 +474,7 @@ namespace cellution
                     if (rand <= 0)
                     {
                         behavior = gene.Item1;
-                        dna.influenceGene(tempIndex, influencePercent);
+                        dna.InfluenceGene(tempIndex, influencePercent);
                         if (sprite.color == Game1.world.cellManager.playerColor)
                         {
                             dna.print();
@@ -514,10 +510,6 @@ namespace cellution
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch);
-            if (selected)
-            {
-                dna.DrawDNAValues(spriteBatch);
-            }
             //DrawLine(spriteBatch, sprite.position, targetPosition);
         }
 

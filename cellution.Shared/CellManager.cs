@@ -12,6 +12,7 @@ namespace cellution
         private Texture2D cellTexture;
         private GraphicsDeviceManager graphics;
         public List<Cell> cells;
+        public List<Cell> playerCells;
         public int a;
         public int c;
         public int g;
@@ -28,6 +29,7 @@ namespace cellution
             this.cellTexture = cellTexture;
             this.graphics = graphics;
             cells = new List<Cell>();
+            playerCells = new List<Cell>();
             selectedCell = null;
             cellCap = 50;
             numCellsAtStart = 10;
@@ -85,6 +87,15 @@ namespace cellution
 
         public void Update(GameTime gameTime)
         {
+            // Keeps seperate list of playerCells
+            playerCells.Clear();
+            foreach (Cell cell in cells)
+            {
+                if (cell.sprite.color == playerColor) {
+                    playerCells.Add(cell);
+                }
+            }
+
             // helps keep the number of alive cells constant
             if (cells.Count < cellCap && World.Random.Next(100) == 0)
             {
@@ -192,15 +203,7 @@ namespace cellution
             newCell.c = cell.c;
             newCell.g = cell.g;
             newCell.t = cell.t;
-            // To be implemented in another fashion, for now, 1 in 5 non player divides changes color
-            if (World.Random.Next(5) == 0)//&& cell.sprite.color != playerColor)
-            {
-                newCell.SetColor(World.Random.Next(4)); // Excludes player Color (Blue)
-            }
-            else
-            {
-                newCell.sprite.color = cell.sprite.color;
-            }
+            newCell.sprite.color = cell.sprite.color;
 
             cells.Add(newCell);
         }

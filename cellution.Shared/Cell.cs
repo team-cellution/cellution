@@ -70,7 +70,7 @@ namespace cellution
             chaseSecs = 5;
             waitSecs = 1;
             influencePercent = 1;
-            sizeResourceDenominator = 400f;
+            sizeResourceDenominator = 100f;
             killingSpreeCounter = 0;
             killingSpreeTotal = 5;
         }

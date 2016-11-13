@@ -229,6 +229,48 @@ namespace cellution
                 selectedCell.behavior = -3;
             }
 
+            // Press 'E' to select the playerCell after the current selectedCell in the playerCells list
+            if (world.cellManager.selectedCell != null && keyboardState.IsKeyDown(Keys.E) &&
+                previousKeyboardState.IsKeyUp(Keys.E))
+            {
+                Cell selectedCell = world.cellManager.selectedCell;
+                List<Cell> playerCells = world.cellManager.playerCells;
+                int index = playerCells.IndexOf(selectedCell);
+                selectedCell.selected = false;
+                if (playerCells.Count - 1 >= index + 1)
+                {
+                    world.cellManager.selectedCell = playerCells[index + 1];
+                }
+                else
+                {
+                    world.cellManager.selectedCell = playerCells[0];
+                }
+                selectedCell = world.cellManager.selectedCell;
+                selectedCell.selected = true;
+                highlightRing.SetHighlightCell(selectedCell);
+            }
+
+            // Press 'Q' to select the playerCell before the current selectedCell in the playerCells list
+            if (world.cellManager.selectedCell != null && keyboardState.IsKeyDown(Keys.Q) &&
+                previousKeyboardState.IsKeyUp(Keys.Q))
+            {
+                Cell selectedCell = world.cellManager.selectedCell;
+                List<Cell> playerCells = world.cellManager.playerCells;
+                int index = playerCells.IndexOf(selectedCell);
+                selectedCell.selected = false;
+                if (index - 1 >= 0)
+                {
+                    world.cellManager.selectedCell = playerCells[0];
+                }
+                else
+                {
+                    world.cellManager.selectedCell = playerCells[playerCells.Count - 1];
+                }
+                selectedCell = world.cellManager.selectedCell;
+                selectedCell.selected = true;
+                highlightRing.SetHighlightCell(selectedCell);
+            }
+
             // Press 'S' to try to toggle the selected cell's auto behavior
             if (world.cellManager.selectedCell != null && keyboardState.IsKeyDown(Keys.S) &&
                 previousKeyboardState.IsKeyUp(Keys.S))

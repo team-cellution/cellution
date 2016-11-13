@@ -24,7 +24,7 @@ namespace cellution
             values.Add("attack", new TextItem(World.fontManager["InfoFont"], "Attack"));
             values.Add("wait", new TextItem(World.fontManager["InfoFont"], "Wait"));
 
-            foreach (int i in Enumerable.Range(0, 8))
+            foreach (int i in Shuffle(Enumerable.Range(0, 8).ToList()))
             {
                 genes.Add(new Tuple<int, double>(i, 1));
             }
@@ -161,6 +161,21 @@ namespace cellution
                 index++;
             }
             recalcEpigenes();
+        }
+
+        public static List<T> Shuffle<T>(List<T> list)
+        {
+            List<T> tempList = list; 
+            int n = tempList.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = World.Random.Next(n + 1);
+                T value = tempList[k];
+                tempList[k] = tempList[n];
+                tempList[n] = value;
+            }
+            return tempList;
         }
     }
 }

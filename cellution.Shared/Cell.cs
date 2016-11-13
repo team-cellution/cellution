@@ -47,6 +47,7 @@ namespace cellution
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
         {
+            dna = new DNA();
             sprite = new Sprite(texture, graphics, spriteSheetInfo);
             sprite.position = position;
             sprite.origin = new Vector2(texture.Width/2, texture.Height/2);
@@ -60,7 +61,6 @@ namespace cellution
             kill = false;
             targetCell = this;
             chaseUntil = new TimeSpan(0);
-            dna = new DNA();
             startingSpeed = speed = 3.0f;
             AttackRange = 300;
             selected = false;
@@ -309,7 +309,7 @@ namespace cellution
                 foreach (Cell cell in Game1.world.cellManager.cells)
                 {
                     // Only attack those who are different colored and smaller
-                    if ((!cannibal && cell.sprite.color != sprite.color) || (cannibal && cell.sprite.color == sprite.color) &&
+                    if (((!cannibal && cell.sprite.color != sprite.color) || (cannibal && cell.sprite.color == sprite.color)) &&
                         cell.sprite.scale < sprite.scale)//cell.id != id)
                     {
                         double temp = Vector2.Distance(cell.sprite.position, sprite.position);

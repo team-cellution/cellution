@@ -30,7 +30,7 @@ namespace cellution
             cells = new List<Cell>();
             selectedCell = null;
             cellCap = 50;
-            numCellsAtStart = 20;
+            numCellsAtStart = 10;
             startWithRandomEpigenes = true;
             playerColor = new Color(75, 209, 239); // Blue
         }
@@ -61,7 +61,7 @@ namespace cellution
         public Cell CreateCell(Vector2 position)
         {
             Cell cell = new Cell(position, cellTexture, graphics, new SpriteSheetInfo(120, 120));
-            cell.sprite.animations["divide"] = cell.sprite.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 250, false);
+            cell.sprite.animations["divide"] = cell.sprite.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 75, false);
             cell.sprite.animations.CurrentAnimationName = null;
             cell.sprite.animations.SetFrameAction("divide", 8, cell.SetDoneDividing);
             int cellColor;
@@ -74,7 +74,7 @@ namespace cellution
         public Cell CreatePlayerCell(Vector2 position)
         {
             Cell cell = new Cell(position, cellTexture, graphics, new SpriteSheetInfo(120, 120));
-            cell.sprite.animations["divide"] = cell.sprite.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 250, false);
+            cell.sprite.animations["divide"] = cell.sprite.animations.AddSpriteSheet(World.textureManager["Cell-Division"], 9, 3, 3, SpriteSheet.Directions.LeftToRight, 75, false);
             cell.sprite.animations.CurrentAnimationName = null;
             cell.sprite.animations.SetFrameAction("divide", 8, cell.SetDoneDividing);
             int cellColor = 4;

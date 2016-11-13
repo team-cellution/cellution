@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -38,14 +37,6 @@ namespace cellution
         private bool doAdd;
         private Sprite background;
         private List<TextItem> BVs;
-        //private TextItem BV1;
-        //private TextItem BV2;
-        //private TextItem BV3;
-        //private TextItem BV4;
-        //private TextItem BV5;
-        //private TextItem BV6;
-        //private TextItem BV7;
-        //private TextItem BV8;
         private TextItem addButton;
         private CellManager cellManager;
         private DNA activeDNA;
@@ -105,29 +96,11 @@ namespace cellution
             }
             addButton.Text = "Add Probability";
             Position = position;
-            //addButton.position = position + new Vector2(xOffset - addButton.TextSize.X - 10, 30);
-            //BV1.position = position + new Vector2(xOffset, 60);
-            //BV2.position = position + new Vector2(xOffset, BV1.position.Y + BV1.TextSize.Y + 10);
-            //BV3.position = position + new Vector2(xOffset, BV2.position.Y + BV2.TextSize.Y + 10);
-            //BV4.position = position + new Vector2(xOffset, BV3.position.Y + BV3.TextSize.Y + 10);
-            //BV5.position = position + new Vector2(xOffset, BV4.position.Y + BV1.TextSize.Y + 10);
-            //BV6.position = position + new Vector2(xOffset, BV5.position.Y + BV2.TextSize.Y + 10);
-            //BV7.position = position + new Vector2(xOffset, BV6.position.Y + BV3.TextSize.Y + 10);
-            //BV7.position = position + new Vector2(xOffset, BV6.position.Y + BV3.TextSize.Y + 10);
-            //BV8.position = position + new Vector2(xOffset, BV7.position.Y + BV3.TextSize.Y + 10);
             addButton.Update();
             foreach (var item in BVs)
             {
                 item.Update();
             }
-            //BV1.rectangle = generateSplit(0);
-            //BV2.rectangle = generateSplit(1);
-            //BV3.rectangle = generateSplit(2);
-            //BV4.rectangle = generateSplit(3);
-            //BV5.rectangle = generateSplit(4);
-            //BV6.rectangle = generateSplit(5);
-            //BV7.rectangle = generateSplit(6);
-            //BV8.rectangle = generateSplit(7);
 
             if (currentState.LeftButton == ButtonState.Pressed &&
                 previousMouseState.LeftButton == ButtonState.Released && cellManager.selectedCell != null)

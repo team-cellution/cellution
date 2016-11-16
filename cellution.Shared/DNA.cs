@@ -9,138 +9,104 @@ namespace cellution
 {
     public class DNA
     {
-        public List<Tuple<int, double>> genes; // list of genes
+        public enum Genes
+        {
+            EatA,
+            EatC,
+            EatG,
+            EatT,
+            Divide,
+            Wander,
+            Attack,
+            Wait
+        }
+
+        public Dictionary<Genes, double> genes;
 
         public DNA()
         {
-            genes = new List<Tuple<int, double>>();
+            genes = new Dictionary<Genes, double>();
 
-            foreach (int i in Shuffle(Enumerable.Range(0, 8).ToList()))
+            for (int i = 0; i < 8; i++)
             {
-                genes.Add(new Tuple<int, double>(i, 1));
+                genes.Add((Genes)i, 1);
             }
-            recalcEpigenes();
+            RecalcEpigenes();
         }
 
         // rebalance the genes probabilities to total to 1.00 (100%)
-        public void recalcEpigenes()
+        public void RecalcEpigenes()
         {
             double maxVal = Double.MinValue;
             double minVal = Double.MaxValue;
             double sum = 0;
-            foreach (Tuple<int, double> gene in genes)
+            foreach (var gene in genes)
             {
-                sum += gene.Item2;
-                if (gene.Item2 > maxVal)
+                sum += gene.Value;
+                if (gene.Value > maxVal)
                 {
-                    maxVal = gene.Item2;
+                    maxVal = gene.Value;
                 }
-                if (gene.Item2 < minVal)
+                if (gene.Value < minVal)
                 {
-                    minVal = gene.Item2;
+                    minVal = gene.Value;
                 }
             }
             double ratio = 1 / sum;
-            List<Tuple<int, double>> tempList = new List<Tuple<int, double>>();
-            foreach (Tuple<int, double> gene in genes)
+            Dictionary<Genes, double> tempList = new Dictionary<Genes, double>();
+            foreach (var gene in genes)
             {
-                tempList.Add(new Tuple<int, double>(gene.Item1, gene.Item2 * ratio));
+                tempList.Add(gene.Key, gene.Value * ratio);
             }
             genes = tempList;
         }
 
         // print out the dna in the debug console
-        public void print()
+        public void Print()
         {
             Console.Write("\n");
-            foreach (Tuple<int, double> gene in genes)
+            foreach (var gene in genes)
             {
-                switch (gene.Item1)
-                {
-                    case 0:
-                        Console.Write(" EatA:" + Math.Round(gene.Item2, 3) * 100 + "%");
-                        break;
-                    case 1:
-                        Console.Write(" EatC:" + Math.Round(gene.Item2, 3) * 100 + "%");
-                        break;
-                    case 2:
-                        Console.Write(" EatT:" + Math.Round(gene.Item2, 3) * 100 + "%");
-                        break;
-                    case 3:
-                        Console.Write(" EatG:" + Math.Round(gene.Item2, 3) * 100 + "%");
-                        break;
-                    case 4:
-                        Console.Write(" Divide:" + Math.Round(gene.Item2, 3) * 100 + "%"); 
-                        break;
-                    case 5:
-                        Console.Write(" Wander:" + Math.Round(gene.Item2, 3) * 100 + "%");
-                        break;
-                    case 6:
-                        Console.Write(" Attack:" + Math.Round(gene.Item2, 3) * 100 + "%");
-                        break;
-                    case 7:
-                        Console.Write(" Wait:" + Math.Round(gene.Item2, 3) * 100 + "%");
-                        break;
-                    default:
-                        break;
-
-                }
+                Console.Write($"{gene.Key.ToString()}: {Math.Round(gene.Value, 3) * 100}%");
             }
             Console.Write("\n");
         }
 
         // increase the probability of a gene by a percent, then recalc the epigenes
-        public void InfluenceGene(int index, double percent)
+        public void InfluenceGene(Genes gene, double percent)
         {
-            replaceGene(index, genes[index].Item1, genes[index].Item2 + percent / 100 / genes.Count);
-            recalcEpigenes();
+            ReplaceGene(gene, genes[gene] + percent / 100 / genes.Count);
+            RecalcEpigenes();
         }
 
-        // replace a gene with a new behavior and new epigene
-        public void replaceGene(int index, int newBehavior, double newEpigene)
+        public void ReplaceGene(Genes gene, double newEpigene)
         {
-            List<Tuple<int, double>> tempList = new List<Tuple<int, double>>();
-            int tempIndex = 0;
-            foreach (Tuple<int, double> gene in genes)
-            {
-                if (tempIndex == index)
-                {
-                    tempList.Add(new Tuple<int, double>(newBehavior, newEpigene));
-                }
-                else
-                {
-                    tempList.Add(new Tuple<int, double>(gene.Item1, gene.Item2));
-                }
-                tempIndex++;
-            }
-            genes = tempList;
+            genes[gene] = newEpigene;
         }
 
         // randomly assigns probabilities to the genes and recalcs the totals
         public void Randomize()
         {
-            int index = 0;
-            foreach (Tuple<int, double> gene in genes)
+            for (int i = 0; i < genes.Count; i++)
             {
-                replaceGene(index, gene.Item1, World.Random.Next(100));
-                index++;
+                ReplaceGene((Genes)i, World.Random.Next(100));
             }
-            recalcEpigenes();
+            RecalcEpigenes();
         }
 
-        public static List<T> Shuffle<T>(List<T> list)
-        {
-            List<T> tempList = list; 
-            int n = tempList.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = World.Random.Next(n + 1);
-                T value = tempList[k];
-                tempList[k] = tempList[n];
-                tempList[n] = value;
-            }
-            return tempList;
-        }
+        //public static List<T> Shuffle<T>(List<T> list)
+        //{
+        //    List<T> tempList = list; 
+        //    int n = tempList.Count;
+        //    while (n > 1)
+        //    {
+        //        n--;
+        //        int k = World.Random.Next(n + 1);
+        //        T value = tempList[k];
+        //        tempList[k] = tempList[n];
+        //        tempList[n] = value;
+        //    }
+        //    return tempList;
+        //}
     }
 }

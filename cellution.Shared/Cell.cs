@@ -467,21 +467,21 @@ namespace cellution
             if (behavior == -1 && (this != Game1.world.cellManager.selectedCell || autoSelected))
             {
                 double rand = World.Random.NextDouble();
-                int tempIndex = 0;
-                foreach (Tuple<int, double> gene in dna.genes)
+                for (int i = 0; i < dna.genes.Count; i++)
                 {
-                    rand -= gene.Item2;
+                    DNA.Genes geneKey = (DNA.Genes)i;
+                    double geneValue = dna.genes[geneKey];
+                    rand -= geneValue;
                     if (rand <= 0)
                     {
-                        behavior = gene.Item1;
-                        dna.InfluenceGene(tempIndex, influencePercent);
+                        behavior = i;
+                        dna.InfluenceGene(geneKey, influencePercent);
                         if (sprite.color == Game1.world.cellManager.playerColor)
                         {
-                            dna.print();
+                            dna.Print();
                         }
                         break;
                     }
-                    tempIndex++;
                 }
             }
         }

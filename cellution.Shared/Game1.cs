@@ -172,6 +172,9 @@ namespace cellution
                 if (!playerHasACell)
                 {
                     world.cellManager.cells.Add(world.cellManager.CreatePlayerCell(transformedMouseState));
+                    highlightRing.SetHighlightCell(world.cellManager.cells[world.cellManager.cells.Count - 1]);
+                    // temp giant cell
+                    //world.cellManager.cells[world.cellManager.cells.Count - 1].a = 900;
                 }
             }
 
@@ -262,7 +265,7 @@ namespace cellution
                 selectedCell.selected = false;
                 if (index - 1 >= 0)
                 {
-                    world.cellManager.selectedCell = playerCells[0];
+                    world.cellManager.selectedCell = playerCells[index - 1];
                 }
                 else
                 {

@@ -32,7 +32,7 @@ namespace cellution
             playerCells = new List<Cell>();
             selectedCell = null;
             cellCap = 50;
-            numCellsAtStart = 10;
+            numCellsAtStart = 30;
             startWithRandomEpigenes = true;
             playerColor = new Color(75, 209, 239); // Blue
         }
@@ -96,12 +96,14 @@ namespace cellution
                 }
             }
 
+            /*
             // helps keep the number of alive cells constant
             if (cells.Count < cellCap && World.Random.Next(100) == 0)
             {
                 cells.Add(CreateCell(new Vector2(World.Random.Next(0, 1920), World.Random.Next(0, 1080))));
                 cells.Last().dna.Randomize();
             }
+            */
 
             // 1 in 500 updates a non player cell will change color
             if (World.Random.Next(500) == 0)

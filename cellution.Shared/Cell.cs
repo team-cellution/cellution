@@ -535,24 +535,24 @@ namespace cellution
         public void SetColor(int index)
         {
             if (index == 0)
-            {// red
-                sprite.color = new Color(219, 107, 94);
+            {
+                sprite.color = World.Red;
             }
             else if (index == 1)
-            {// yellow
-                sprite.color = new Color(224, 227, 87);
+            {
+                sprite.color = World.Yellow;
             }
             else if (index == 2)
-            {// green
-                sprite.color = new Color(109, 221, 101);
+            {
+                sprite.color = World.Green;
             }
             else if (index == 3)
-            {// purple
-                sprite.color = new Color(176, 93, 232);
+            {
+                sprite.color = World.Purple;
             }
             else if (index == 4)
-            {// blue
-                sprite.color = new Color(75, 209, 239);
+            {
+                sprite.color = World.Blue;
             }
             sprite.alpha = 0.8f;
         }

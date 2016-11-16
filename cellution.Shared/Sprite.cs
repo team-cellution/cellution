@@ -24,6 +24,17 @@ namespace cellution
             isAnimated = false;
         }
 
+
+        public Sprite(GraphicsDeviceManager graphics)
+        {
+            tex = new Texture2D(graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            tex.SetData(new[] { color });
+            rectangle = new Rectangle((int)position.X, (int)position.Y, tex.Width, tex.Height);
+            drawRect = new Rectangle((int)position.X, (int)position.Y, 0, 0);
+            origin = new Vector2(tex.Width / 2, tex.Height / 2);
+            isAnimated = false;
+        }
+
         public Sprite(Texture2D baseTex, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : this(graphics, spriteSheetInfo)
         {
             tex = baseTex;
@@ -50,8 +61,8 @@ namespace cellution
                 UpdateAnimation(gameTime);
             }
             position += velocity;
-            drawRect.X = (int)Math.Round(position.X);
-            drawRect.Y = (int)Math.Round(position.Y);
+            drawRect.X = (int)position.X;
+            drawRect.Y = (int)position.Y;
             rectangle = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), tex.Width, tex.Height);
             spriteTransform = Matrix.CreateTranslation(new Vector3(-origin, 0.0f)) *
                 Matrix.CreateScale(scale) * Matrix.CreateRotationZ(rotation) *

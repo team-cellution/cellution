@@ -44,7 +44,7 @@ namespace cellution
             position = new Vector2(textItem.position.X, textItem.position.Y + textItem.TextSize.Y + margin);
         }
 
-        public void PositionRight(TextItem textItem, float margin)
+        public void PositionRight(TextItem textItem, float margin = 10)
         {
             position = new Vector2(textItem.position.X + textItem.TextSize.X + margin, textItem.position.Y);
         }

@@ -77,6 +77,8 @@ namespace cellution
             World.textureManager.Load("helix-resource");
             World.textureManager.Load("Cell-Division");
             World.textureManager.Load("highlight_ring");
+            World.textureManager.Load("arrow");
+            World.textureManager.Load("plus");
 
             World.fontManager.Load("ScoreFont");
             World.fontManager.Load("InfoFont");
@@ -367,7 +369,7 @@ namespace cellution
         {
             if (world.rooms.CurrentName == UpgradeRoom)
             {
-                GraphicsDevice.Clear(Color.Black);
+                GraphicsDevice.Clear(Color.White);
             }
             else
             {

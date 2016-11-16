@@ -8,6 +8,45 @@ namespace cellution
     public class World
     {
         public static Random Random { get; private set; }
+        public static Color Red
+        {
+            get
+            {
+                return new Color(219, 107, 94);
+            }
+        }
+
+        public static Color Yellow
+        {
+            get
+            {
+                return new Color(224, 227, 87);
+            }
+        }
+
+        public static Color Green
+        {
+            get
+            {
+                return new Color(109, 221, 101);
+            }
+        }
+
+        public static Color Blue
+        {
+            get
+            {
+                return new Color(75, 209, 239);
+            }
+        }
+
+        public static Color Purple
+        {
+            get
+            {
+                return new Color(176, 93, 232);
+            }
+        }
 
         static World()
         {

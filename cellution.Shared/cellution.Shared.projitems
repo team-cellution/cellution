@@ -17,10 +17,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Cell.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CellManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DebugRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DNA.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DNAGui.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EatGui.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HighlightRing.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Line.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PermanantStates.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResourceManager.cs" />
@@ -31,6 +34,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)StatsGUI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TextItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContentManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UpgradeRoomBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)World.cs" />
   </ItemGroup>
 </Project>

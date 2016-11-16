@@ -18,6 +18,8 @@ namespace cellution
         public float rotation;
         public float scale;
 
+        
+
         public SpriteBase()
         {
             SpriteInit();

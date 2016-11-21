@@ -297,24 +297,33 @@ namespace cellution
         }
 
         // attack the neaest enemy cell with optional killing spree or cannibal
-        public void Attack(GameTime gameTime, bool spree=false, bool cannibal=false)
+        public void Attack(GameTime gameTime, bool spree=false, bool cannibal=false, Cell customTarget = null)
         {
             if (targetCell.id == id)
             {
                 double nTDist = Double.MaxValue;
-                foreach (Cell cell in Game1.world.cellManager.cells)
+                if (customTarget == null)
                 {
-                    // Only attack those who are different colored and smaller
-                    if (((!cannibal && cell.sprite.color != sprite.color) || (cannibal && cell.sprite.color == sprite.color)) &&
-                        cell.sprite.scale < sprite.scale)//cell.id != id)
+                    foreach (Cell cell in Game1.world.cellManager.cells)
                     {
-                        double temp = Vector2.Distance(cell.sprite.position, sprite.position);
-                        if (temp < nTDist)
+                        // Only attack those who are different colored and smaller
+                        if (((!cannibal && cell.sprite.color != sprite.color) || (cannibal && cell.sprite.color == sprite.color)) &&
+                            cell.sprite.scale < sprite.scale)//cell.id != id)
                         {
-                            nTDist = temp;
-                            targetCell = cell;
+                            double temp = Vector2.Distance(cell.sprite.position, sprite.position);
+                            if (temp < nTDist)
+                            {
+                                nTDist = temp;
+                                targetCell = cell;
+                            }
                         }
                     }
+                }
+                else
+                {
+                    targetCell = customTarget;
+                    nTDist = AttackRange;
+                    behavior = 6;
                 }
                 //Console.WriteLine("Dist " + nTDist);
                 // If it couldn't find any cells in range, reset behavior
@@ -343,10 +352,10 @@ namespace cellution
                 if (sprite.rectangle.Contains(targetCell.sprite.position) && targetCell.sprite.scale < sprite.scale)
                 {
                     targetCell.kill = true;
-                    a += (int)(targetCell.a * absorbEfficiency);
-                    c += (int)(targetCell.c * absorbEfficiency);
-                    g += (int)(targetCell.g * absorbEfficiency);
-                    t += (int)(targetCell.t * absorbEfficiency);
+                    a += (int)(targetCell.a * absorbEfficiency) + 1;
+                    c += (int)(targetCell.c * absorbEfficiency) + 1;
+                    g += (int)(targetCell.g * absorbEfficiency) + 1;
+                    t += (int)(targetCell.t * absorbEfficiency) + 1;
                     targetCell = this;
                     if (spree)
                     {
@@ -388,6 +397,10 @@ namespace cellution
                         {
                             behavior = -1;
                         }
+                    }
+                    else if (targetCell.sprite.scale > sprite.scale)
+                    {
+                        behavior = -1;
                     }
                     else
                     {

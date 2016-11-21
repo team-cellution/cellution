@@ -149,7 +149,6 @@ namespace cellution
                 if (world.rooms.GetState(UpgradeRoom) != world.rooms.CurrentState)
                 {
                     world.cellManager.selectedCell = null;
-                    highlightRing.SetHighlightCell(null);
                 }
                 
 
@@ -164,7 +163,6 @@ namespace cellution
                         {
                             cell.selected = true;
                             world.cellManager.selectedCell = cell;
-                            highlightRing.SetHighlightCell(cell);
                         }
                         playerHasACell = true;
                     }
@@ -172,23 +170,33 @@ namespace cellution
                 if (!playerHasACell)
                 {
                     world.cellManager.cells.Add(world.cellManager.CreatePlayerCell(transformedMouseState));
-                    highlightRing.SetHighlightCell(world.cellManager.cells[world.cellManager.cells.Count - 1]);
                     // temp giant cell
                     //world.cellManager.cells[world.cellManager.cells.Count - 1].a = 900;
                 }
             }
 
             // if a cell is selected, right click to move it to the mouse's position
-            if (mouseState.RightButton == ButtonState.Pressed)
+            if (mouseState.RightButton == ButtonState.Pressed && world.cellManager.selectedCell != null)
             {
+                Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
+                bool attacking = false;
+                // if you right click on an enemy cell, your cell attacks it.
                 foreach (Cell cell in world.cellManager.cells)
                 {
-                    Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
-                    if (cell == world.cellManager.selectedCell)
+                    if (cell.sprite.color != world.cellManager.playerColor && cell.sprite.scale < world.cellManager.selectedCell.sprite.scale)
                     {
-                        cell.GoTo(new Vector2(transformedMouseState.X, transformedMouseState.Y));
-                        cell.behavior = -2;
+                        if (cell.sprite.rectangle.Contains(transformedMouseState))
+                        {
+                            world.cellManager.selectedCell.Attack(gameTime, false, false, cell);
+                            attacking = true;
+                            break;
+                        }
                     }
+                }
+                if (attacking == false)
+                {
+                    world.cellManager.selectedCell.GoTo(new Vector2(transformedMouseState.X, transformedMouseState.Y));
+                    world.cellManager.selectedCell.behavior = -2;
                 }
             }
 
@@ -252,7 +260,6 @@ namespace cellution
                 }
                 selectedCell = world.cellManager.selectedCell;
                 selectedCell.selected = true;
-                highlightRing.SetHighlightCell(selectedCell);
             }
 
             // Press 'Q' to select the playerCell before the current selectedCell in the playerCells list
@@ -273,7 +280,6 @@ namespace cellution
                 }
                 selectedCell = world.cellManager.selectedCell;
                 selectedCell.selected = true;
-                highlightRing.SetHighlightCell(selectedCell);
             }
 
             // Press 'S' to try to toggle the selected cell's auto behavior

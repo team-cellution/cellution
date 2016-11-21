@@ -44,6 +44,12 @@ namespace cellution
 
         public void Update(GameTime gameTime)
         {
+            Cell selectedCell = Game1.world.cellManager.selectedCell;
+            // Insures that the selectedCell is always highLighted
+            if (targetCell != selectedCell)
+            {
+                SetHighlightCell(selectedCell);
+            }
             if (targetCell != null)
             {
                 sprite.position = targetCell.sprite.position;
@@ -55,7 +61,7 @@ namespace cellution
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (sprite.visible)
+            if (sprite.visible && (targetCell.sprite.animations.active == false))
             {
                 sprite.Draw(spriteBatch);
             }

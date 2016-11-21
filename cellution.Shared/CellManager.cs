@@ -213,6 +213,10 @@ namespace cellution
         // kills the cell
         public void KillCell(Cell cell)
         {
+            if (cell == selectedCell)
+            {
+                selectedCell = null;
+            }
             cells.Remove(cell);
         }
     }

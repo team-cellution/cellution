@@ -11,10 +11,7 @@ namespace cellution
     {
         public enum Genes
         {
-            EatA,
-            EatC,
-            EatG,
-            EatT,
+            Eat,
             Divide,
             Wander,
             Attack,
@@ -27,9 +24,10 @@ namespace cellution
         {
             genes = new Dictionary<Genes, double>();
 
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 5; i++) // same as below
             {
                 genes.Add((Genes)i, 1);
+                
             }
             RecalcEpigenes();
         }

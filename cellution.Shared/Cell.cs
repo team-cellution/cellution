@@ -44,6 +44,7 @@ namespace cellution
         public float sizeResourceDenominator; // the number that the sum of resources is divided by when calculating size
         public int killingSpreeTotal; // How many cells will it have to kill before stopping its spree
         public int killingSpreeCounter; // how many cells it has killed in the spree so far
+        public List<double> eatingPreferences; // probabilities of eating different foods (A, C, G, T)
 
         public Cell(Vector2 position, Texture2D texture, GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
         {
@@ -73,6 +74,23 @@ namespace cellution
             sizeResourceDenominator = 100f;
             killingSpreeCounter = 0;
             killingSpreeTotal = 5;
+            eatingPreferences = new List<double>() {.4, .3, .2, .1};
+            eatingPreferences = Shuffle(eatingPreferences);
+        }
+
+        public static List<T> Shuffle<T>(List<T> list)
+        {
+            List<T> tempList = list; 
+            int n = tempList.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = World.Random.Next(n + 1);
+                T value = tempList[k];
+                tempList[k] = tempList[n];
+                tempList[n] = value;
+            }
+            return tempList;
         }
 
         public void Update(GameTime gameTime)
@@ -99,22 +117,10 @@ namespace cellution
             {
                 // Eat A
                 case 0:
-                    Eat(0);
-                    break;
-                // Eat C
-                case 1:
-                    Eat(1);
-                    break;
-                // Eat G
-                case 2:
-                    Eat(2);
-                    break;
-                // Eat T
-                case 3:
-                    Eat(3);
+                    Eat();
                     break;
                 // Divide
-                case 4:
+                case 1:
                     if (a >= minToDivA && c >= minToDivC && g >= minToDivG && t >= minToDivT)
                     {
                         divide = true;
@@ -122,16 +128,16 @@ namespace cellution
                     behavior = -1;
                     break;
                 // Wander
-                case 5:
+                case 2:
                     Wander();
                     behavior = -3;
                     break;
                 // Attack
-                case 6:
+                case 3:
                     Attack(gameTime);
                     break;
                 // Wait
-                case 7:
+                case 4:
                     Wait(gameTime);
                     break;
                 // behaviors past this point can only be mutated/cells dont start with these\
@@ -160,28 +166,25 @@ namespace cellution
             sprite.Update(gameTime);
         }
         // Eat the nearest resource of type: 0 = a, 1 = c,  2 = g, 3 = t
-        private void Eat(int resourceType)
+        private void Eat()
         {
+            double random = World.Random.NextDouble();
             Resource.ResourceTypes rType;
-            if (resourceType == 0)
+            if (random - eatingPreferences[0] <= 0)
             {
                 rType = Resource.ResourceTypes.A;
             }
-            else if (resourceType == 1)
+            else if (random - eatingPreferences[0] - eatingPreferences[1] <= 0)
             {
                 rType = Resource.ResourceTypes.C;
             }
-            else if (resourceType == 2)
+            else if (random - eatingPreferences[0] - eatingPreferences[1] - eatingPreferences[2] <= 0)
             {
                 rType = Resource.ResourceTypes.G;
             }
-            else if (resourceType == 3)
-            {
-                rType = Resource.ResourceTypes.T;
-            }
             else
             {
-                throw new System.ArgumentException("Parameter must be between 0 (A) and 3 (T)", "resourceType");
+                rType = Resource.ResourceTypes.T;
             }
             
             Vector2 newTarget = sprite.position;
@@ -323,7 +326,7 @@ namespace cellution
                 {
                     targetCell = customTarget;
                     nTDist = AttackRange;
-                    behavior = 6;
+                    behavior = 3;
                 }
                 //Console.WriteLine("Dist " + nTDist);
                 // If it couldn't find any cells in range, reset behavior
@@ -443,12 +446,12 @@ namespace cellution
         public void StopCellIfReady()
         {
             // If at target and not waiting
-            if (behavior != 7 && Vector2.Distance(sprite.position, targetPosition) < sprite.tex.Width * sprite.scale / 2 - 3)
+            if (behavior != 4 && Vector2.Distance(sprite.position, targetPosition) < sprite.tex.Width * sprite.scale / 2 - 3)
             {
                 // Stop
                 sprite.velocity = Vector2.Zero;
                 // If not Attacking or congregating, reset behavior
-                if (behavior != 6 && behavior != 8)
+                if (behavior != 3 && behavior != 5)
                 {
                     behavior = -1;
                 }

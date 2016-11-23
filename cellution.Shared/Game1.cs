@@ -230,7 +230,7 @@ namespace cellution
                 previousKeyboardState.IsKeyUp(Keys.A))
             {
                 Cell selectedCell = world.cellManager.selectedCell;
-                selectedCell.behavior = 6;
+                selectedCell.behavior = 3;
             }
 
             // Press 'W' to try to have the selected cell wander

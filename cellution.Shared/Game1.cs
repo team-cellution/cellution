@@ -79,6 +79,7 @@ namespace cellution
             World.textureManager.Load("highlight_ring");
             World.textureManager.Load("arrow");
             World.textureManager.Load("plus");
+            World.textureManager.Load("upgrade_now");
 
             World.fontManager.Load("ScoreFont");
             World.fontManager.Load("InfoFont");
@@ -96,7 +97,7 @@ namespace cellution
 
             dnaGui = new DNAGui(graphics, World.textureManager["helix-resource"], world.cellManager);
 
-            statsGUI = new StatsGUI(World.textureManager["helix-resource"], world.cellManager);
+            statsGUI = new StatsGUI(World.textureManager["helix-resource"], world.cellManager, graphics);
 
             world.rooms.CurrentState.AddUpdate(world.resourceManager.Update);
             world.rooms.CurrentState.AddUpdate(statsGUI.Update);
@@ -201,8 +202,8 @@ namespace cellution
             }
 
             // space bar toggles upgrade room
-            if (keyboardState.IsKeyDown(Keys.Space) &&
-                previousKeyboardState.IsKeyUp(Keys.Space))
+            if (keyboardState.IsKeyDown(World.upgradeRoomKey) &&
+                previousKeyboardState.IsKeyUp(World.upgradeRoomKey))
             {
                 if (world.rooms.CurrentName == "game")
                 {
@@ -210,6 +211,7 @@ namespace cellution
                 }
                 else if (world.rooms.CurrentName == UpgradeRoom)
                 {
+                    statsGUI.HideUpgradeHud();
                     world.rooms.CurrentName = "game";
                 }
             }

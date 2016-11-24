@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace cellution
 {
@@ -48,9 +49,12 @@ namespace cellution
             }
         }
 
+        public static Keys upgradeRoomKey;
+
         static World()
         {
             Random = new Random();
+            upgradeRoomKey = Keys.Space;
         }
 
         GraphicsDeviceManager graphics;

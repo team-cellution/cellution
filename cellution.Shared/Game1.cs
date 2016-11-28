@@ -80,6 +80,8 @@ namespace cellution
             World.textureManager.Load("arrow");
             World.textureManager.Load("plus");
             World.textureManager.Load("upgrade_now");
+            World.textureManager.Load("UI-bars");
+            World.textureManager.Load("filled_bar");
 
             World.fontManager.Load("ScoreFont");
             World.fontManager.Load("InfoFont");

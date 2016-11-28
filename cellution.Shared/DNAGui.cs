@@ -26,6 +26,7 @@ namespace cellution
         }
         private bool doAdd;
         private Sprite background;
+        private UpgradeRoomBarGui bars;
         private CellManager cellManager;
         private DNA activeDNA;
         private Cell activeCell;
@@ -42,6 +43,7 @@ namespace cellution
             this.graphics = graphics;
             xOffset = graphics.GraphicsDevice.Viewport.Width - 300;
             this.background = new Sprite(background);
+            bars = new UpgradeRoomBarGui(graphics);
             this.background.origin = Vector2.Zero;
             this.cellManager = cellManager;
             this.activeCell = cellManager.selectedCell;
@@ -51,7 +53,6 @@ namespace cellution
             eatGui = new EatGui();
             eatGui.Position = new Vector2(200);
         }
-
 
         private void SetUpBars(GraphicsDeviceManager graphics)
         {
@@ -91,8 +92,6 @@ namespace cellution
             return t;
         }
 
-        
-
         public void Update(GameTime gameTime)
         {
             MouseState currentState = Mouse.GetState();
@@ -108,6 +107,7 @@ namespace cellution
         public void Draw(SpriteBatch spriteBatch)
         {
             background.Draw(spriteBatch);
+            bars.Draw(spriteBatch);
             waitBar.Draw(spriteBatch);
             wanderBar.Draw(spriteBatch);
             attackBar.Draw(spriteBatch);

@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)TextItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ContentManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UpgradeRoomBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UpgradeRoomBarGui.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)World.cs" />
   </ItemGroup>
 </Project>

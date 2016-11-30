@@ -31,11 +31,6 @@ namespace cellution
         private DNA activeDNA;
         private Cell activeCell;
 
-        private UpgradeRoomBar waitBar;
-        private UpgradeRoomBar wanderBar;
-        private UpgradeRoomBar attackBar;
-        private UpgradeRoomBar speedBar;
-
         private EatGui eatGui;
 
         public DNAGui(GraphicsDeviceManager graphics, Texture2D background, CellManager cellManager)
@@ -49,56 +44,21 @@ namespace cellution
             this.activeCell = cellManager.selectedCell;
             this.activeDNA = cellManager.selectedCell?.dna;
             Position = this.background.position;
-            SetUpBars(graphics);
             eatGui = new EatGui();
-            eatGui.Position = new Vector2(200);
+            eatGui.Position = new Vector2(307, 24);
         }
 
-        private void SetUpBars(GraphicsDeviceManager graphics)
+        public void SetActiveCell(Cell cell)
         {
-            waitBar = new UpgradeRoomBar(graphics);
-            waitBar.Position = new Vector2(400);
-            waitBar.SetTitle("Wait");
-            waitBar.SetValue(100);
-            waitBar.SetColor(World.Yellow);
-            waitBar.SetLetter("C");
-
-            wanderBar = new UpgradeRoomBar(graphics);
-            wanderBar.Position = new Vector2(600, 400);
-            wanderBar.SetTitle("Wander");
-            wanderBar.SetValue(50);
-            wanderBar.SetColor(World.Green);
-            wanderBar.SetLetter("G");
-
-            attackBar = new UpgradeRoomBar(graphics);
-            attackBar.Position = new Vector2(800, 400);
-            attackBar.SetTitle("Attack");
-            attackBar.SetValue(25);
-            attackBar.SetColor(World.Red);
-            attackBar.SetLetter("A");
-
-            speedBar = new UpgradeRoomBar(graphics);
-            speedBar.Position = new Vector2(1000, 400);
-            speedBar.SetTitle("Speed");
-            speedBar.SetValue(5);
-            speedBar.SetColor(World.Blue);
-            speedBar.SetLetter("T");
-        }
-
-        private TextItem InitializeItem(Color c)
-        {
-            TextItem t = new TextItem(World.fontManager["InfoFont"], "0");
-            t.color = c;
-            return t;
+            activeCell = cell;
+            activeDNA = cell.dna;
+            bars.UpdateDnaValues(activeDNA);
         }
 
         public void Update(GameTime gameTime)
         {
             MouseState currentState = Mouse.GetState();
-            waitBar.Update(gameTime);
-            wanderBar.Update(gameTime);
-            attackBar.Update(gameTime);
-            speedBar.Update(gameTime);
+            bars.Update(gameTime);
             eatGui.Update(gameTime);
             Position = position;
             previousMouseState = currentState;
@@ -108,10 +68,6 @@ namespace cellution
         {
             background.Draw(spriteBatch);
             bars.Draw(spriteBatch);
-            waitBar.Draw(spriteBatch);
-            wanderBar.Draw(spriteBatch);
-            attackBar.Draw(spriteBatch);
-            speedBar.Draw(spriteBatch);
             eatGui.Draw(spriteBatch);
         }
     }

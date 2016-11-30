@@ -229,3 +229,9 @@
 /processorParam:TextureFormat=Color
 /build:filled_bar.png
 
+#begin Impact-36.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Impact-36.spritefont
+

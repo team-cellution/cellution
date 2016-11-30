@@ -85,6 +85,7 @@ namespace cellution
 
             World.fontManager.Load("ScoreFont");
             World.fontManager.Load("InfoFont");
+            World.fontManager.Load("Impact-36");
 
             // create 1x1 texture for line drawing
             world.oneByOne = new Texture2D(GraphicsDevice, 1, 1);
@@ -209,6 +210,7 @@ namespace cellution
             {
                 if (world.rooms.CurrentName == "game")
                 {
+                    dnaGui.SetActiveCell(world.cellManager.selectedCell);
                     world.rooms.CurrentName = UpgradeRoom;
                 }
                 else if (world.rooms.CurrentName == UpgradeRoom)

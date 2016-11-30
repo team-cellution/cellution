@@ -11,14 +11,10 @@ namespace cellution
         private GraphicsDeviceManager graphics;
 
         private Sprite barsOverlay;
-        private Sprite aBar;
-        private Sprite aRect;
-        private Sprite cBar;
-        private Sprite cRect;
-        private Sprite gBar;
-        private Sprite gRect;
-        private Sprite tBar;
-        private Sprite tRect;
+        private UpgradeRoomBar a;
+        private UpgradeRoomBar c;
+        private UpgradeRoomBar g;
+        private UpgradeRoomBar t;
 
         public UpgradeRoomBarGui(GraphicsDeviceManager graphics)
         {
@@ -27,45 +23,42 @@ namespace cellution
             barsOverlay.origin = Vector2.Zero;
             barsOverlay.position = new Vector2(760, 330);
 
-            aBar = LoadBar(new Vector2(768, 335), World.Red);
-            cBar = LoadBar(new Vector2(991, 335), World.Yellow);
-            gBar = LoadBar(new Vector2(1215, 335), World.Green);
-            tBar = LoadBar(new Vector2(1437, 335), World.Blue);
-
-            aRect = LoadRectangle(new Vector2(768, 335));
-            cRect = LoadRectangle(new Vector2(991, 335));
-            gRect = LoadRectangle(new Vector2(1215, 335));
-            tRect = LoadRectangle(new Vector2(1437, 335));
+            a = new UpgradeRoomBar(graphics, new Vector2(768, 335), World.Red, DNA.Genes.Attack);
+            a.SetTitle("Attack");
+            a.SetValue(25);
+            c = new UpgradeRoomBar(graphics, new Vector2(991, 335), World.Yellow, DNA.Genes.Wait);
+            c.SetTitle("Wait");
+            c.SetValue(100);
+            g = new UpgradeRoomBar(graphics, new Vector2(1215, 335), World.Green, DNA.Genes.Wander);
+            g.SetTitle("Wander");
+            g.SetValue(50);
+            t = new UpgradeRoomBar(graphics, new Vector2(1437, 335), World.Blue, DNA.Genes.Divide);
+            t.SetTitle("Speed");
+            t.SetValue(5);
         }
 
-        private Sprite LoadBar(Vector2 position, Color color)
+        public void UpdateDnaValues(DNA dna)
         {
-            Sprite bar = new Sprite(World.textureManager["filled_bar"]);
-            bar.origin = Vector2.Zero;
-            bar.position = position;
-            bar.color = color;
-            return bar;
+            a.SetCurrentDna(dna);
+            c.SetCurrentDna(dna);
+            g.SetCurrentDna(dna);
+            t.SetCurrentDna(dna);
         }
 
-        private Sprite LoadRectangle(Vector2 position)
+        public void Update(GameTime gameTime)
         {
-            Sprite rectangle = new Sprite(graphics);
-            rectangle.origin = Vector2.Zero;
-            rectangle.position = position;
-            rectangle.drawRect = new Rectangle((int)position.X, (int)position.Y, 162, 221);
-            return rectangle;
+            a.Update(gameTime);
+            c.Update(gameTime);
+            g.Update(gameTime);
+            t.Update(gameTime);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            aBar.Draw(spriteBatch);
-            aRect.DrawRect(spriteBatch);
-            cBar.Draw(spriteBatch);
-            cRect.DrawRect(spriteBatch);
-            gBar.Draw(spriteBatch);
-            gRect.DrawRect(spriteBatch);
-            tBar.Draw(spriteBatch);
-            tRect.DrawRect(spriteBatch);
+            a.Draw(spriteBatch);
+            c.Draw(spriteBatch);
+            g.Draw(spriteBatch);
+            t.Draw(spriteBatch);
             barsOverlay.Draw(spriteBatch);
         }
     }

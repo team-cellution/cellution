@@ -47,6 +47,11 @@ namespace cellution
             }
         }
 
+        public void RemoveAll() {
+            updateMethods.Clear();
+            drawMethods.Clear();
+        }
+
         public void Update(GameTime gameTime)
         {
             cameras.CurrentState.Update();

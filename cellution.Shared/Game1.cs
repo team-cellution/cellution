@@ -17,7 +17,13 @@ namespace cellution
         public KeyboardState previousKeyboardState;
         public MouseState previousMouseState;
 
+        public Keys HelpKey = Keys.Tab;
+
+ 
+
         const string UpgradeRoom = "upgrade";
+        public const  string HelpRoom = "help";
+        HelpGUI currentHelp;
 
         HighlightRing highlightRing;
 
@@ -42,6 +48,12 @@ namespace cellution
 #endif
         }
 
+
+
+
+
+
+        
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -54,7 +66,7 @@ namespace cellution
             World.textureManager = new ContentManager<Texture2D>(Content);
             World.fontManager = new ContentManager<SpriteFont>(Content);
             world.rooms.AddState(UpgradeRoom, new Room(graphics));
-
+            world.rooms.AddState(HelpRoom, new Room(graphics));
             world.resourceManager = new ResourceManager(graphics.GraphicsDevice.Viewport);
 
             base.Initialize();
@@ -117,6 +129,18 @@ namespace cellution
             world.rooms.GetState(UpgradeRoom).AddUpdate(statsGUI.Update);
             world.rooms.GetState(UpgradeRoom).AddDraw(dnaGui.Draw);
             world.rooms.GetState(UpgradeRoom).AddUpdate(dnaGui.Update);
+            //
+            currentHelp = new HelpGUI("game", world.cellManager.selectedCell?.sprite, graphics);
+            currentHelp.updateStatsGUIPosition(statsGUI.Position);
+            world.rooms.GetState(HelpRoom).AddDraw(world.resourceManager.Draw);
+            world.rooms.GetState(HelpRoom).AddDraw(world.cellManager.DrawSelected);
+            world.rooms.GetState(HelpRoom).AddDraw(highlightRing.Draw);
+            world.rooms.GetState(HelpRoom).AddDraw(statsGUI.Draw);
+            world.rooms.GetState(HelpRoom).AddDraw(currentHelp.Draw);
+            world.rooms.GetState(HelpRoom).AddUpdate(currentHelp.Update);
+
+            world.rooms.CurrentName = HelpRoom;
+
         }
 
         /// <summary>
@@ -218,6 +242,38 @@ namespace cellution
                     statsGUI.HideUpgradeHud();
                     world.rooms.CurrentName = "game";
                 }
+            }
+            //This is currently set to the Tab Key
+            if (keyboardState.IsKeyDown(HelpKey) &&
+                previousKeyboardState.IsKeyUp(HelpKey))
+            {
+                if (world.rooms.CurrentName == "game")
+                {
+                    currentHelp = new HelpGUI("game", world.cellManager.selectedCell?.sprite, graphics);
+                    currentHelp.updateStatsGUIPosition(statsGUI.Position);
+                    world.rooms.GetState(HelpRoom).AddDraw(world.resourceManager.Draw);
+                    world.rooms.GetState(HelpRoom).AddDraw(world.cellManager.DrawSelected);
+                    world.rooms.GetState(HelpRoom).AddDraw(highlightRing.Draw);
+                    world.rooms.GetState(HelpRoom).AddDraw(statsGUI.Draw);
+                    world.rooms.GetState(HelpRoom).AddDraw(currentHelp.Draw);
+                    world.rooms.GetState(HelpRoom).AddUpdate(currentHelp.Update);
+                    
+                    world.rooms.CurrentName = HelpRoom;
+                }
+                /*else if (world.rooms.CurrentName == UpgradeRoom)
+                {
+                    world.rooms.GetState(UpgradeRoom).AddDraw(world.cellManager.DrawSelected);
+                    world.rooms.GetState(UpgradeRoom).AddDraw(highlightRing.Draw);
+                    world.rooms.GetState(UpgradeRoom).AddDraw(statsGUI.Draw);
+                    world.rooms.GetState(UpgradeRoom).AddDraw(dnaGui.Draw);
+                    world.rooms.CurrentName = HelpRoom;
+                }*/
+                else if (world.rooms.CurrentName == HelpRoom) {
+                    world.rooms.CurrentName = currentHelp.room;
+                    world.rooms.GetState(HelpRoom).RemoveAll();
+
+                }
+
             }
 
             // Press 'D' to try to divide your selected cell
@@ -397,5 +453,7 @@ namespace cellution
 
             base.Draw(gameTime);
         }
+
+        
     }
 }

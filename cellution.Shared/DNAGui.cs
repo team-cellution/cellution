@@ -50,9 +50,11 @@ namespace cellution
 
         public void SetActiveCell(Cell cell)
         {
-            activeCell = cell;
-            activeDNA = cell.dna;
-            bars.UpdateDnaValues(activeDNA);
+            if (cell != null) { 
+                activeCell = cell;
+                activeDNA = cell.dna;
+                bars.UpdateDnaValues(activeDNA);
+             }
         }
 
         public void Update(GameTime gameTime)

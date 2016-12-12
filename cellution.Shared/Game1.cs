@@ -22,7 +22,7 @@ namespace cellution
  
 
         const string UpgradeRoom = "upgrade";
-        public const  string HelpRoom = "help";
+        public const string HelpRoom = "help";
         HelpGUI currentHelp;
 
         HighlightRing highlightRing;
@@ -94,6 +94,7 @@ namespace cellution
             World.textureManager.Load("upgrade_now");
             World.textureManager.Load("UI-bars");
             World.textureManager.Load("filled_bar");
+            World.textureManager.Load("shade_circle");
 
             World.fontManager.Load("ScoreFont");
             World.fontManager.Load("InfoFont");

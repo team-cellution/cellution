@@ -22,11 +22,6 @@ namespace cellution
 
         public SpriteBase()
         {
-            SpriteInit();
-        }
-
-        private void SpriteInit()
-        {
             position = Vector2.Zero;
             velocity = Vector2.Zero;
             visible = true;

@@ -15,7 +15,7 @@ namespace cellution
         public Animations animations;
         private bool isAnimated;
 
-        public Sprite(Texture2D loadedTex)
+        public Sprite(Texture2D loadedTex) : base()
         {
             tex = loadedTex;
             drawRect = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), 0, 0);
@@ -25,7 +25,7 @@ namespace cellution
         }
 
 
-        public Sprite(GraphicsDeviceManager graphics)
+        public Sprite(GraphicsDeviceManager graphics) : base()
         {
             tex = new Texture2D(graphics.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             tex.SetData(new[] { color });
@@ -40,7 +40,7 @@ namespace cellution
             tex = baseTex;
         }
 
-        public Sprite(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo)
+        public Sprite(GraphicsDeviceManager graphics, SpriteSheetInfo spriteSheetInfo) : base()
         {
             isAnimated = true;
             drawRect = new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), 0, 0);

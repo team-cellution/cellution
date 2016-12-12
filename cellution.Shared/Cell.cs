@@ -10,6 +10,7 @@ namespace cellution
     public class Cell
     {
         public Sprite sprite; // the cell graphic
+        private Sprite sizeShadingSprite; // sprite that indicates to the player the relative size of this cell
         public Vector2 targetPosition; // the position the cell moves towards
         public int a; // amount of 'a' resource contained in the cell
         public int c; // amount of 'c' resource contained in the cell
@@ -51,8 +52,9 @@ namespace cellution
             dna = new DNA();
             sprite = new Sprite(texture, graphics, spriteSheetInfo);
             sprite.position = position;
-            sprite.origin = new Vector2(texture.Width/2, texture.Height/2);
-            sprite.scale = 1f;
+            sprite.origin = new Vector2(texture.Width / 2, texture.Height / 2);
+            sizeShadingSprite = new Sprite(World.textureManager["shade_circle"]);
+            sizeShadingSprite.visible = false;
             id = World.Random.Next(0, int.MaxValue);
             behavior = -1;
             lastBehavior = -4;
@@ -164,7 +166,27 @@ namespace cellution
                     break;
             }
             sprite.Update(gameTime);
+            sizeShadingSprite.scale = sprite.scale;
+            sizeShadingSprite.position = sprite.position;
         }
+
+        public void CellSizeShadeVisibility(bool visible)
+        {
+            sizeShadingSprite.visible = visible;
+        }
+
+        public void SetCellSizeShadeColor(float scale)
+        {
+            if (scale <= sprite.scale)
+            {
+                sizeShadingSprite.color = Color.Red;
+            }
+            else
+            {
+                sizeShadingSprite.color = Color.Blue;
+            }
+        }
+
         // Eat the nearest resource of type: 0 = a, 1 = c,  2 = g, 3 = t
         private void Eat()
         {
@@ -526,6 +548,10 @@ namespace cellution
         public void Draw(SpriteBatch spriteBatch)
         {
             sprite.Draw(spriteBatch);
+            if (sizeShadingSprite.visible)
+            {
+                sizeShadingSprite.Draw(spriteBatch);
+            }
             //DrawLine(spriteBatch, sprite.position, targetPosition);
         }
 

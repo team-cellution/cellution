@@ -34,7 +34,7 @@ namespace cellution
             cellCap = 50;
             numCellsAtStart = 30;
             startWithRandomEpigenes = true;
-            playerColor = new Color(75, 209, 239); // Blue
+            playerColor = World.Blue; // Blue
         }
 
         // places a random cell with random probability into the game. if there are no cells, the first cell is a player cell.
@@ -91,8 +91,21 @@ namespace cellution
             playerCells.Clear();
             foreach (Cell cell in cells)
             {
-                if (cell.sprite.color == playerColor) {
+                if (cell.sprite.color == playerColor)
+                {
                     playerCells.Add(cell);
+                }
+                else
+                {
+                    if (selectedCell != null)
+                    {
+                        cell.CellSizeShadeVisibility(true);
+                        cell.SetCellSizeShadeColor(selectedCell.sprite.scale);
+                    }
+                    else
+                    {
+                        cell.CellSizeShadeVisibility(false);
+                    }
                 }
             }
 

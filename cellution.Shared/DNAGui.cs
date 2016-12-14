@@ -24,7 +24,6 @@ namespace cellution
                 background.position = position;
             }
         }
-        private bool doAdd;
         private Sprite background;
         private UpgradeRoomBarGui bars;
         private CellManager cellManager;
@@ -53,7 +52,7 @@ namespace cellution
             if (cell != null) { 
                 activeCell = cell;
                 activeDNA = cell.dna;
-                bars.UpdateDnaValues(activeDNA);
+                bars.UpdateCurrentCell(cell);
              }
         }
 

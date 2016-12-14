@@ -120,14 +120,14 @@ namespace cellution
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (var i in slots)
-            {
-                i.Key.Draw(spriteBatch);
-            }
-            a.Draw(spriteBatch);
-            c.Draw(spriteBatch);
-            g.Draw(spriteBatch);
-            t.Draw(spriteBatch);
+            //foreach (var i in slots)
+            //{
+            //    i.Key.Draw(spriteBatch);
+            //}
+            //a.Draw(spriteBatch);
+            //c.Draw(spriteBatch);
+            //g.Draw(spriteBatch);
+            //t.Draw(spriteBatch);
         }
     }
 }

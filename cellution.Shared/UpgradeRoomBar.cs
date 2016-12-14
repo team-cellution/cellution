@@ -19,8 +19,11 @@ namespace cellution
         private TextItem percentage;
         private Sprite addButton;
         private TextItem increaseText;
-        private DNA currentDna;
+        private int decreaseValue;
+        private TextItem decreaseText;
+        private Cell currentCell;
         private DNA.Genes attachedGene;
+        private string attachedLetter;
         private Vector2 position;
         public Vector2 Position
         {
@@ -35,26 +38,32 @@ namespace cellution
                 percentage.position = position + new Vector2(bar.tex.Width / 2 - percentage.TextSize.X / 2, barMax / 2 - percentage.TextSize.Y / 2);
                 addButton.position = position + new Vector2(0, bar.tex.Height + 10);
                 increaseText.position = addButton.position + new Vector2(addButton.tex.Width + increaseText.TextSize.X, increaseText.TextSize.Y / 2);
+                decreaseText.position = new Vector2(position.X + bar.tex.Width / 2 - decreaseText.TextSize.X / 2, increaseText.position.Y + increaseText.TextSize.Y + 10);
             }
         }
         private MouseState previousMouseState;
         private DebugRectangle debugRect;
 
-        public UpgradeRoomBar(GraphicsDeviceManager graphics, Vector2 position, Color color, DNA.Genes attachedGene)
+        public UpgradeRoomBar(GraphicsDeviceManager graphics, Vector2 position, Color color, DNA.Genes attachedGene, string attachedLetter)
         {
             this.graphics = graphics;
             bar = LoadBar(position, color);
             rect = LoadRectangle(position);
             value = 0;
             title = new TextItem(World.fontManager["Impact-36"], "");
+            title.color = Color.Black;
             percentage = new TextItem(World.fontManager["Impact-36"], "");
             percentage.color = Color.Black;
             addButton = GenerateUpArrow();
             addButton.origin = Vector2.Zero;
             increaseText = new TextItem(World.fontManager["Impact-36"], "1%");
             increaseText.color = Color.Green;
-            currentDna = null;
+            decreaseValue = 1;
+            decreaseText = new TextItem(World.fontManager["Impact-36"], $"-{decreaseValue}");
+            decreaseText.color = color;
+            currentCell = null;
             this.attachedGene = attachedGene;
+            this.attachedLetter = attachedLetter;
             debugRect = new DebugRectangle(graphics);
             debugRect.SetColor(Color.Black);
             Position = position;
@@ -93,16 +102,16 @@ namespace cellution
             return arrow;
         }
 
-        public void SetCurrentDna(DNA dna)
+        public void SetCurrentCell(Cell cell)
         {
-            currentDna = dna;
-            if (dna == null)
+            currentCell = cell;
+            if (cell == null)
             {
                 SetValueWithPercentage(0);
             }
             else
             {
-                SetValueWithPercentage((float)currentDna.genes[attachedGene]);
+                SetValueWithPercentage((float)currentCell.dna.genes[attachedGene]);
             }
         }
 
@@ -140,6 +149,8 @@ namespace cellution
             percentage.Update();
             addButton.Update(gameTime);
             increaseText.Update();
+            decreaseText.Text = $"-{decreaseValue}";
+            decreaseText.Update();
 
             debugRect.UpdateRectangle(addButton.rectangle);
             Vector2 transformedMouseState = Vector2.Transform(mouseState.Position.ToVector2(), Game1.world.rooms.CurrentState.cameras.CurrentState.InverseTransform);
@@ -147,14 +158,39 @@ namespace cellution
                 mouseState.LeftButton == ButtonState.Pressed &&
                 previousMouseState.LeftButton == ButtonState.Released)
             {
-                if (currentDna != null)
+                if (currentCell != null)
                 {
-                    currentDna.genes[attachedGene] += 0.01;
-                    currentDna.RecalcEpigenes();
-                    SetValueWithPercentage((float)currentDna.genes[attachedGene]);
+                    if (attachedLetter == "a" && currentCell.a >= decreaseValue)
+                    {
+                        currentCell.a -= decreaseValue;
+                        IncreasePercentage();
+                    }
+                    else if (attachedLetter == "c" && currentCell.c >= decreaseValue)
+                    {
+                        currentCell.c -= decreaseValue;
+                        IncreasePercentage();
+                    }
+                    else if (attachedLetter == "g" && currentCell.g >= decreaseValue)
+                    {
+                        currentCell.g -= decreaseValue;
+                        IncreasePercentage();
+                    }
+                    else if (attachedLetter == "t" && currentCell.t >= decreaseValue)
+                    {
+                        currentCell.t -= decreaseValue;
+                        IncreasePercentage();
+                    }
                 }
             }
             previousMouseState = mouseState;
+        }
+
+        private void IncreasePercentage()
+        {
+            decreaseValue++;
+            currentCell.dna.genes[attachedGene] += 0.01;
+            currentCell.dna.RecalcEpigenes();
+            SetValueWithPercentage((float)currentCell.dna.genes[attachedGene]);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -165,7 +201,8 @@ namespace cellution
             percentage.Draw(spriteBatch);
             addButton.Draw(spriteBatch);
             increaseText.Draw(spriteBatch);
-            debugRect.Draw(spriteBatch);
+            decreaseText.Draw(spriteBatch);
+            //debugRect.Draw(spriteBatch);
         }
     }
 }

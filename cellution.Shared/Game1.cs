@@ -95,6 +95,7 @@ namespace cellution
             World.textureManager.Load("UI-bars");
             World.textureManager.Load("filled_bar");
             World.textureManager.Load("shade_circle");
+            World.textureManager.Load("test_crosshair");
 
             World.fontManager.Load("ScoreFont");
             World.fontManager.Load("InfoFont");

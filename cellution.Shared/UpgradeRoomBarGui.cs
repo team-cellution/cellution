@@ -23,26 +23,26 @@ namespace cellution
             barsOverlay.origin = Vector2.Zero;
             barsOverlay.position = new Vector2(760, 330);
 
-            a = new UpgradeRoomBar(graphics, new Vector2(768, 335), World.Red, DNA.Genes.Attack);
+            a = new UpgradeRoomBar(graphics, new Vector2(768, 335), World.Red, DNA.Genes.Attack, "a");
             a.SetTitle("Attack");
             a.SetValue(25);
-            c = new UpgradeRoomBar(graphics, new Vector2(991, 335), World.Yellow, DNA.Genes.Wait);
+            c = new UpgradeRoomBar(graphics, new Vector2(991, 335), World.Yellow, DNA.Genes.Wait, "c");
             c.SetTitle("Wait");
             c.SetValue(100);
-            g = new UpgradeRoomBar(graphics, new Vector2(1215, 335), World.Green, DNA.Genes.Wander);
+            g = new UpgradeRoomBar(graphics, new Vector2(1215, 335), World.Green, DNA.Genes.Wander, "g");
             g.SetTitle("Wander");
             g.SetValue(50);
-            t = new UpgradeRoomBar(graphics, new Vector2(1437, 335), World.Blue, DNA.Genes.Divide);
-            t.SetTitle("Speed");
+            t = new UpgradeRoomBar(graphics, new Vector2(1437, 335), World.Blue, DNA.Genes.Divide, "t");
+            t.SetTitle("Divide");
             t.SetValue(5);
         }
 
-        public void UpdateDnaValues(DNA dna)
+        public void UpdateCurrentCell(Cell cell)
         {
-            a.SetCurrentDna(dna);
-            c.SetCurrentDna(dna);
-            g.SetCurrentDna(dna);
-            t.SetCurrentDna(dna);
+            a.SetCurrentCell(cell);
+            c.SetCurrentCell(cell);
+            g.SetCurrentCell(cell);
+            t.SetCurrentCell(cell);
         }
 
         public void Update(GameTime gameTime)
